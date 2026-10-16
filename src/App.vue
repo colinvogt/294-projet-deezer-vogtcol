@@ -7,5 +7,9 @@
 </template>
 
 <script setup>
-  //
+
+  // Import du store Pokémon
+  import { useAlbumStore } from '@/stores/albumStore'
+
+
 </script>
