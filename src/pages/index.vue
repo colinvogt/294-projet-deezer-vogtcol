@@ -7,10 +7,10 @@
     <v-row>
       <ul>
         <li
-          v-for="champ in champions"
+          v-for="champ in albums"
           :key="champ.id"
         >
-          {{ champ.name }}
+          {{ champ.title }}
         </li>
       </ul>
     </v-row>
@@ -20,11 +20,11 @@
 <script setup>
   import { onMounted, ref } from 'vue'
 
-  const champions = ref([])
+  const albums = ref([])
 
   onMounted(async () => {
-    const response = await fetch('https://apis.divtec.me/api/lol/champions')
+    const response = await fetch('https://apis.divtec.me/api/deezer/albums')
     const json = await response.json()
-    champions.value = json.data
+    albums.value = json.data
   })
 </script>
