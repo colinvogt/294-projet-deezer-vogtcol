@@ -19,15 +19,13 @@
 
 <script setup>
   // Import du store et de storeToRefs
-  import { useAlbumStore } from '@/stores/albumStore'
   import { storeToRefs } from 'pinia'
+  import { useAlbumStore } from '@/stores/albumStore'
 
   // Instancier le store
-  const Store = useAlbumStore()
+  const albumStore = useAlbumStore()
 
-  onMounted(async () => {
-    const response = await fetch('https://apis.divtec.me/api/deezer/albums')
-    const json = await response.json()
-    albums.value = json.data
-  })
+  // Destructurer le state en gardant la réactivité
+  // storeToRefs convertit chaque propriété du state en ref
+  const { albums } = storeToRefs(albumStore)
 </script>
