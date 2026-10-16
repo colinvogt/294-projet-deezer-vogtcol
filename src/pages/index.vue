@@ -18,9 +18,10 @@
 </template>
 
 <script setup>
-  import { onMounted, ref } from 'vue'
+// Import du store et de storeToRefs
+import { useAlbumStore } from '@/stores/albumStore'
+import { storeToRefs } from 'pinia'
 
-  const albums = ref([])
 
   onMounted(async () => {
     const response = await fetch('https://apis.divtec.me/api/deezer/albums')
