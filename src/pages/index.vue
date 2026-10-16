@@ -5,14 +5,16 @@
     </h1>
 
     <v-row>
-      <ul>
-        <li
-          v-for="champ in albums"
-          :key="champ.id"
-        >
-          {{ champ.title }}
-        </li>
-      </ul>
+      <v-col
+        v-for="album in albums"
+        :key="album.id"
+        cols="12"
+        lg="3"
+        md="4"
+        sm="6"
+      >
+        <album-card :album="album" />
+      </v-col>
     </v-row>
   </v-container>
 </template>
