@@ -18,10 +18,12 @@
 </template>
 
 <script setup>
-// Import du store et de storeToRefs
-import { useAlbumStore } from '@/stores/albumStore'
-import { storeToRefs } from 'pinia'
+  // Import du store et de storeToRefs
+  import { useAlbumStore } from '@/stores/albumStore'
+  import { storeToRefs } from 'pinia'
 
+  // Instancier le store
+  const Store = useAlbumStore()
 
   onMounted(async () => {
     const response = await fetch('https://apis.divtec.me/api/deezer/albums')
