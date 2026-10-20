@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-  import { getImageUrl } from '@/utils/image'
+  import { getImageUrl } from 'utils/imageUrl.js'
 
   defineProps({
     album: {
