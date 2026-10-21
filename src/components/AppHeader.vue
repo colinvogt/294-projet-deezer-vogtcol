@@ -25,7 +25,7 @@
   // eslint-disable-next-line prefer-const
   menuItems = [
     { title: 'Accueil', path: '/', icon: '@/assets/logo.svg' },
-    { title: 'Favoris', path: '/favoris', icon: '@/assets/logo.png' },
-    { title: 'À propos', path: '/a-propos', icon: '@/assets/logo.png' },
+    { title: 'Favoris', path: '/favoris', icon: 'mdi-heart' },
+    { title: 'À propos', path: '/a-propos', icon: 'mdi-information' },
   ]
 </script>
