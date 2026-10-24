@@ -21,6 +21,12 @@ const useAlbumStore = defineStore('album', {
         return state.albums.find(album => String(album.id) === String(albumId))
       }
     },
+
+    getArtistById: state => {
+      return artistId => {
+        return state.artistes.find(artiste => String(artiste.id) === String(artistId))
+      }
+    },
   },
 
   actions: {
