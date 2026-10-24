@@ -40,38 +40,31 @@ const useAlbumStore = defineStore('album', {
     },
 
     async fetchAlbums ({ withLoader = true } = {}) {
-      if (withLoader) {
-        this.isLoading = true
-      }
+      if (withLoader) this.isLoading = true
 
       try {
         const response = await api.get('/albums')
-        this.albums = response.data
+        // L'API renvoie { data: [...] } : les albums sont dans response.data.data
+        this.albums = response.data.data
       } catch (error) {
         console.error('Erreur lors du chargement des albums:', error.message)
         this.albums = []
       } finally {
-        if (withLoader) {
-          this.isLoading = false
-        }
+        if (withLoader) this.isLoading = false
       }
     },
 
     async fetchArtiste ({ withLoader = true } = {}) {
-      if (withLoader) {
-        this.isLoading = true
-      }
+      if (withLoader) this.isLoading = true
 
       try {
         const response = await api.get('/artists')
-        this.artistes = response.data
+        this.artistes = response.data.data ?? response.data
       } catch (error) {
         console.error('Erreur lors du chargement des artistes:', error.message)
         this.artistes = []
       } finally {
-        if (withLoader) {
-          this.isLoading = false
-        }
+        if (withLoader) this.isLoading = false
       }
     },
   },
