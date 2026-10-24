@@ -1,7 +1,7 @@
 <template>
   <v-card
     hover
-    :to="`/pokemon/${album.id}`"
+    :to="`/Album/${album.id}`"
   >
     <v-img
       :alt="album.title"
