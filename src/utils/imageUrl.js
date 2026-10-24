@@ -7,5 +7,5 @@ export function getImageUrl (filename, fallback = 'default.png') {
   if (!filename) {
     filename = fallback
   }
-  return `${import.meta.env.BASE_URL}images/${filename}`
+  return `${import.meta.env.VITE_API_UR}albums/image/${filename}`
 }
