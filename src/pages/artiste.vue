@@ -1,6 +1,3 @@
-<script setup>
-  import albumStore from '@/stores/albumStore.js'
-</script>
 <template>
   <v-container>
     <h1 class="text-h3 text-center my-6">
@@ -47,4 +44,18 @@
         sm="6"
       >
         <v-card hover>
-          <v-card-title /></v-card></v-col></v-row></v-container></template>{
+          <v-card-title>{{ artiste.name }}</v-card-title>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script setup>
+  import useAlbumStore from '@/stores/albumStore'
+
+  const albumStore = useAlbumStore()
+
+  // URL de l'API pour le message d'erreur
+  const apiUrl = import.meta.env.VITE_API_URL
+</script>
