@@ -9,6 +9,7 @@ const useAlbumStore = defineStore('album', {
   state: () => ({
     albums: [],
     artistes: [],
+    tracks: [],
     isLoading: false,
   }),
 
@@ -37,6 +38,7 @@ const useAlbumStore = defineStore('album', {
         await Promise.all([
           this.fetchAlbums({ withLoader: false }),
           this.fetchArtiste({ withLoader: false }),
+          this.fetchTracks({ withLoader: false }),
         ])
       } catch (error) {
         console.error('Erreur lors de l\'initialisation:', error)
@@ -46,7 +48,9 @@ const useAlbumStore = defineStore('album', {
     },
 
     async fetchAlbums ({ withLoader = true } = {}) {
-      if (withLoader) this.isLoading = true
+      if (withLoader) {
+        this.isLoading = true
+      }
 
       try {
         const response = await api.get('/albums')
@@ -56,12 +60,16 @@ const useAlbumStore = defineStore('album', {
         console.error('Erreur lors du chargement des albums:', error.message)
         this.albums = []
       } finally {
-        if (withLoader) this.isLoading = false
+        if (withLoader) {
+          this.isLoading = false
+        }
       }
     },
 
     async fetchArtiste ({ withLoader = true } = {}) {
-      if (withLoader) this.isLoading = true
+      if (withLoader) {
+        this.isLoading = true
+      }
 
       try {
         const response = await api.get('/artists')
@@ -70,7 +78,27 @@ const useAlbumStore = defineStore('album', {
         console.error('Erreur lors du chargement des artistes:', error.message)
         this.artistes = []
       } finally {
-        if (withLoader) this.isLoading = false
+        if (withLoader) {
+          this.isLoading = false
+        }
+      }
+    },
+
+    async fetchTracks ({ withLoader = true } = {}) {
+      if (withLoader) {
+        this.isLoading = true
+      }
+
+      try {
+        const response = await api.get('/tracks')
+        this.tracks = response.data.data ?? response.data
+      } catch (error) {
+        console.error('Erreur lors du chargement des titres:', error.message)
+        this.tracks = []
+      } finally {
+        if (withLoader) {
+          this.isLoading = false
+        }
       }
     },
   },
