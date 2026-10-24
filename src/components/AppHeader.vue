@@ -22,8 +22,9 @@
 </template>
 
 <script setup>
-  const menuItems = [
-    { title: 'Accueil', path: '/', icon: 'mdi-home' },
-    { title: 'Artistes', path: '/Artiste', icon: 'mdi-account-music' },
-  ]
+const menuItems = [
+  { title: 'Accueil', path: '/', icon: 'mdi-home' },
+  { title: 'Artistes', path: '/artiste', icon: 'mdi-account-music' },
+  { title: 'Favoris', path: '/favoris', icon: 'mdi-heart' },
+]
 </script>
