@@ -1,11 +1,15 @@
 // src/utils/imageUrl.js
 
 /**
- * Retourne l'URL complète d'une image d'album
+ * Retourne l'URL complète d'une image d'album.
+ * L'API renvoie un chemin comme "/images/deezer/albums/1.webp",
+ * on lui ajoute le domaine du serveur (https://apis.divtec.me).
  */
-export function getImageUrl (filename, fallback = 'default.png') {
-  if (!filename) {
-    filename = fallback
+export function getImageUrl (path) {
+  if (!path) {
+    return ''
   }
-  return `${import.meta.env.VITE_API_URL}/albums/image/${filename}`
+
+  const serverUrl = new URL(import.meta.env.VITE_API_URL).origin
+  return `${serverUrl}${path}`
 }
