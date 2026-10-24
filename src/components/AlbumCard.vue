@@ -10,7 +10,7 @@
       :src="getImageUrl(album.image)"
     />
     <v-card-title>{{ album.title }}</v-card-title>
-    <v-card-subtitle>Artiste {{ album.artiste }}</v-card-subtitle>
+    <v-card-subtitle>{{ album.artist }}</v-card-subtitle>
   </v-card>
 </template>
 
