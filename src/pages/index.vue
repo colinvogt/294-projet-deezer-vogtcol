@@ -1,11 +1,12 @@
 <template>
   <v-container>
     <h1 class="text-h3 text-center my-6">
-      Projet deezer (titre provisoire)
+      Projet deezer
+      <span class="text-subtitle-1">({{ albumStore.totalAlbum }})</span>
     </h1>
 
-    <!-- État 1 : Loading — squelettes de chargement -->
-    <v-row v-if="AlbumStore.isLoading">
+    <!-- État 1 : Loading -->
+    <v-row v-if="albumStore.isLoading">
       <v-col
         v-for="n in 8"
         :key="n"
@@ -21,17 +22,18 @@
       </v-col>
     </v-row>
 
-    <!-- État 2 : Error — alerte si aucun Pokémon chargé -->
+    <!-- État 2 : Erreur -->
     <v-alert
-      v-else-if="AlbumStore.albums.length === 0"
+      v-else-if="albumStore.albums.length === 0"
       class="mb-6"
       type="error"
       variant="tonal"
     >
-      Impossible de charger les Pokémon. Vérifiez que l'API tourne sur
+      Impossible de charger les albums. Vérifiez que l'API répond sur
       {{ apiUrl }}.
     </v-alert>
 
+    <!-- État 3 : Data -->
     <v-row v-else>
       <v-col
         v-for="album in albumStore.albums"
@@ -48,15 +50,11 @@
 </template>
 
 <script setup>
-  // Import du store et de storeToRefs
-  import { storeToRefs } from 'pinia'
-  import AlbumCard from '/src/components/AlbumCard.vue'
-  import useAlbumStore from '/src/stores/albumStore'
+  import AlbumCard from '@/components/AlbumCard.vue'
+  import useAlbumStore from '@/stores/albumStore'
 
-  // Instancier le store
   const albumStore = useAlbumStore()
 
-  // Destructurer le state en gardant la réactivité
-  // storeToRefs convertit chaque propriété du state en ref
+  // URL de l'API pour le message d'erreur
   const apiUrl = import.meta.env.VITE_API_URL
 </script>
