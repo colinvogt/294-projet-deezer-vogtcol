@@ -14,6 +14,7 @@
         v-for="link in menuItems"
         :key="link.title"
         :icon="link.icon"
+        :title="link.title"
         :to="link.path"
       />
     </v-container>
@@ -21,11 +22,8 @@
 </template>
 
 <script setup>
-  let menuItems
-  // eslint-disable-next-line prefer-const
-  menuItems = [
-    { title: 'Accueil', path: '/', icon: '@/assets/logo.svg' },
-    { title: 'Favoris', path: '/favoris', icon: 'mdi-heart' },
-    { title: 'À propos', path: '/a-propos', icon: 'mdi-information' },
+  const menuItems = [
+    { title: 'Accueil', path: '/', icon: 'mdi-home' },
+    { title: 'Artistes', path: '/Artiste', icon: 'mdi-account-music' },
   ]
 </script>
