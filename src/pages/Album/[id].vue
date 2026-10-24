@@ -39,7 +39,7 @@
       </v-card-title>
 
       <v-card-subtitle>
-        Artiste {{ album.artiste }}
+        {{ album.artist }} · {{ album.releaseDate }}
       </v-card-subtitle>
     </v-card>
   </v-container>
