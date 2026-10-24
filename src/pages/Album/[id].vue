@@ -9,12 +9,17 @@
       Retour
     </v-btn>
 
+    <v-skeleton-loader
+      v-if="albumStore.isLoading"
+      type="image, article"
+    />
+
     <v-alert
-      v-if="!album"
+      v-else-if="!album"
       type="error"
       variant="tonal"
     >
-      Pokémon non trouvé.
+      Album non trouvé.
     </v-alert>
 
     <v-card
@@ -30,30 +35,22 @@
       />
 
       <v-card-title class="text-h4">
-        {{ album.titles }}
+        {{ album.title }}
       </v-card-title>
 
       <v-card-subtitle>
-        Niveau {{ album.artiste }}
+        Artiste {{ album.artiste }}
       </v-card-subtitle>
     </v-card>
   </v-container>
 </template>
 
 <script setup>
-  // Import du store album
   import useAlbumStore from '@/stores/albumStore'
   import { getImageUrl } from '@/utils/imageUrl'
 
-  // Récupérer l'ID depuis les paramètres de la route
   const route = useRoute()
-
-  // Instancier le store
   const albumStore = useAlbumStore()
 
-  // Utiliser le getter du store pour trouver le Pokémon
-  // computed se met à jour automatiquement si l'ID change
-  const album = computed(() => {
-    return albumStore.getAlbumById(route.params.id)
-  })
+  const album = computed(() => albumStore.getAlbumById(route.params.id))
 </script>
