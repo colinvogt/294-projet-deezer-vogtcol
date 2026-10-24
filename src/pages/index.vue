@@ -22,7 +22,7 @@
 <script setup>
   // Import du store et de storeToRefs
   import { storeToRefs } from 'pinia'
-  import { useAlbumStore } from '@/stores/albumStore'
+  import useAlbumStore from '@/stores/albumStore'
 
   // Instancier le store
   const albumStore = useAlbumStore()
