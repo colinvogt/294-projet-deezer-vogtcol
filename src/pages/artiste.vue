@@ -16,8 +16,8 @@
         sm="6"
       >
         <v-skeleton-loader
-          height="120"
-          type="article"
+          height="350"
+          type="image, article"
         />
       </v-col>
     </v-row>
@@ -44,7 +44,14 @@
         sm="6"
       >
         <v-card hover>
+          <v-img
+            :alt="artiste.name"
+            cover
+            height="200"
+            :src="getImageUrl(artiste.image)"
+          />
           <v-card-title>{{ artiste.name }}</v-card-title>
+          <v-card-subtitle>{{ artiste.genres.join(', ') }}</v-card-subtitle>
         </v-card>
       </v-col>
     </v-row>
@@ -53,6 +60,7 @@
 
 <script setup>
   import useAlbumStore from '@/stores/albumStore'
+  import { getImageUrl } from '@/utils/imageUrl.js'
 
   const albumStore = useAlbumStore()
 
