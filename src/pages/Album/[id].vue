@@ -41,8 +41,8 @@
 </template>
 
 <script setup>
-  // Import du store Pokémon
-  import { useAlbumStore } from '@/stores/albumStore'
+  // Import du store album
+  import useAlbumStore from '@/stores/albumStore'
   import { getImageUrl } from '@/utils/imageUrl'
 
   // Récupérer l'ID depuis les paramètres de la route
