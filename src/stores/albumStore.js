@@ -90,7 +90,7 @@ const useAlbumStore = defineStore('album', {
       }
 
       try {
-        const response = await api.get('/tracks')
+        const response = await api.get('/tracks?limit=100')
         this.tracks = response.data.data ?? response.data
       } catch (error) {
         console.error('Erreur lors du chargement des titres:', error.message)
