@@ -3,7 +3,7 @@
     <v-container class="d-flex align-center">
       <v-avatar
         class="mr-4 pa-0 cursor-pointer"
-        image="@/assets/logo.svg"
+        image="@/assets/logo.png"
         size="64"
         @click="$router.push('/')"
       />
@@ -13,10 +13,12 @@
       <v-btn
         v-for="link in menuItems"
         :key="link.title"
-        :icon="link.icon"
+        :prepend-icon="link.icon"
         :title="link.title"
         :to="link.path"
-      />
+      >
+        {{ link.title }}
+      </v-btn>
     </v-container>
   </v-app-bar>
 </template>
