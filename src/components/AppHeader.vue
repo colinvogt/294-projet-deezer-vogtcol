@@ -8,7 +8,7 @@
         @click="$router.push('/')"
       />
 
-      <v-toolbar-title>deezer</v-toolbar-title>
+      <v-toolbar-title>Vogtunes</v-toolbar-title>
 
       <v-btn
         v-for="link in menuItems"
