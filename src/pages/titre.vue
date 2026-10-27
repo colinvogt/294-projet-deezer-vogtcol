@@ -117,6 +117,7 @@
       return albumStore.tracks
     }
 
+    // Recherche par Titre/Artiste/Ablum
     return albumStore.tracks.filter(track => {
       return normalize(track.title).includes(query)
         || normalize(track.artist).includes(query)
