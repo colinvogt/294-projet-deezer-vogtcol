@@ -53,7 +53,7 @@ const useAlbumStore = defineStore('album', {
       }
 
       try {
-        const response = await api.get('/albums')
+        const response = await api.get('/albums?limit=100')
         // L'API renvoie { data: [...] } : les albums sont dans response.data.data
         this.albums = response.data.data
       } catch (error) {
@@ -72,7 +72,7 @@ const useAlbumStore = defineStore('album', {
       }
 
       try {
-        const response = await api.get('/artists')
+        const response = await api.get('/artists?limit=100')
         this.artistes = response.data.data ?? response.data
       } catch (error) {
         console.error('Erreur lors du chargement des artistes:', error.message)
