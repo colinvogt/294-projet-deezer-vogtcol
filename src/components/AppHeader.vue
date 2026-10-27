@@ -24,6 +24,7 @@
 <script setup>
   const menuItems = [
     { title: 'Accueil', path: '/', icon: 'mdi-home' },
+    { title: 'Albums', path: '/album', icon: 'mdi-album' },
     { title: 'Artistes', path: '/artiste', icon: 'mdi-account-music' },
     { title: 'Titres', path: '/titre', icon: 'mdi-music-note' },
     { title: 'Favoris', path: '/favoris', icon: 'mdi-heart' },
