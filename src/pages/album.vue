@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1 class="text-h3 text-center my-6">
-      Projet deezer
+      Album
       <span class="text-subtitle-1">({{ albumStore.totalAlbum }})</span>
     </h1>
 
