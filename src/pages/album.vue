@@ -5,19 +5,15 @@
       <span class="text-subtitle-1">({{ albumStore.totalAlbum }})</span>
     </h1>
 
-    <!--
-    Barre de recherche, filtre et tri
-      * v-row avec 3 colonnes pour les contrôles
-    -->
+    <!-- Barre de recherche, filtre et tri -->
     <v-row class="mb-4">
-      <!-- Recherche par titre ou artiste -->
       <v-col
         cols="12"
         md="4"
         sm="6"
       >
         <v-text-field
-          v-model="search"
+          v-model="searchQuery"
           clearable
           density="compact"
           hide-details
@@ -27,7 +23,6 @@
         />
       </v-col>
 
-      <!-- Filtre par artiste -->
       <v-col
         cols="12"
         md="4"
@@ -45,7 +40,6 @@
         />
       </v-col>
 
-      <!-- Bouton de tri : alterne entre A → Z et Z → A -->
       <v-col
         class="d-flex align-center"
         cols="12"
@@ -91,7 +85,7 @@
       {{ apiUrl }}.
     </v-alert>
 
-    <!-- État 3 : Aucun résultat pour la recherche ou le filtre -->
+    <!-- État 3 : Aucun résultat -->
     <v-alert
       v-else-if="sortedAlbums.length === 0"
       class="mb-6"
@@ -101,7 +95,7 @@
       Aucun album ne correspond à votre recherche.
     </v-alert>
 
-    <!-- État 4 : Data (on itère sur le dernier computed de la chaîne) -->
+    <!-- État 4 : Data -->
     <v-row v-else>
       <v-col
         v-for="album in sortedAlbums"
@@ -127,55 +121,40 @@
   const apiUrl = import.meta.env.VITE_API_URL
 
   // Variables réactives pour la recherche, le filtre et le tri
-  const search = ref('')
+  const searchQuery = ref('')
   const selectedArtist = ref(null)
   const sortOrder = ref('asc')
 
-  // Met en minuscules et enlève les accents : "ROSALÍA" -> "rosalia"
-  function normalize (text) {
-    return String(text ?? '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036F]/g, '')
-  }
-
-  /**
- * Liste des artistes pour le v-select.
- * Set supprime les doublons (un artiste a plusieurs albums).
- */
+  // Liste des artistes pour le v-select (sans doublons)
   const artistNames = computed(() => {
-    const names = new Set(albumStore.albums.map(album => album.artist))
-    return [...names].sort((a, b) => a.localeCompare(b, 'fr'))
+    const list = []
+    for (const album of albumStore.albums) {
+      if (!list.includes(album.artist)) {
+        list.push(album.artist)
+      }
+    }
+    return list.sort()
   })
-
-  /**
- * COMPUTED CHAÎNÉS :
- * albums → filteredByArtist → filteredBySearch → sortedAlbums
- */
 
   // Étape 1 : filtrer par artiste
   const filteredByArtist = computed(() => {
-    if (!selectedArtist.value) {
-      return albumStore.albums
-    }
-    return albumStore.albums.filter(album => album.artist === selectedArtist.value)
+    if (!selectedArtist.value) return albumStore.albums
+    return albumStore.albums.filter(album =>
+      album.artist === selectedArtist.value,
+    )
   })
 
-  // Étape 2 : filtrer par recherche (sur le résultat de l'étape 1)
+  // Étape 2 : filtrer par recherche
   const filteredBySearch = computed(() => {
-    const query = normalize(search.value).trim()
-
-    if (!query) {
-      return filteredByArtist.value
-    }
-
-    return filteredByArtist.value.filter(album => {
-      return normalize(album.title).includes(query)
-        || normalize(album.artist).includes(query)
-    })
+    if (!searchQuery.value) return filteredByArtist.value
+    const query = searchQuery.value.toLowerCase()
+    return filteredByArtist.value.filter(album =>
+      album.title.toLowerCase().includes(query)
+      || album.artist.toLowerCase().includes(query),
+    )
   })
 
-  // Étape 3 : trier par titre (copie du tableau pour ne pas modifier l'original)
+  // Étape 3 : trier par titre
   const sortedAlbums = computed(() => {
     return [...filteredBySearch.value].sort((a, b) => {
       const comparison = a.title.localeCompare(b.title, 'fr')
@@ -183,7 +162,6 @@
     })
   })
 
-  // Inverse l'ordre de tri
   function toggleSort () {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
   }
