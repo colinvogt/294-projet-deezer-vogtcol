@@ -2,7 +2,7 @@
   <v-container>
     <h1 class="text-h3 text-center my-6">
       Album
-      <span class="text-subtitle-1">({{ albumStore.totalAlbum }})</span>
+      <span class="text-subtitle-1">({{ deezerStore.totalAlbum }})</span>
     </h1>
 
     <!-- Barre de recherche, filtre et tri -->
@@ -58,7 +58,7 @@
     </v-row>
 
     <!-- État 1 : Loading -->
-    <v-row v-if="albumStore.isLoading">
+    <v-row v-if="deezerStore.isLoading">
       <v-col
         v-for="n in 8"
         :key="n"
@@ -76,7 +76,7 @@
 
     <!-- État 2 : Erreur -->
     <v-alert
-      v-else-if="albumStore.albums.length === 0"
+      v-else-if="deezerStore.albums.length === 0"
       class="mb-6"
       type="error"
       variant="tonal"
@@ -113,9 +113,9 @@
 
 <script setup>
   import AlbumCard from '@/components/AlbumCard.vue'
-  import useAlbumStore from '@/stores/albumStore'
+  import useDeezerStore from '@/stores/deezerStore.js'
 
-  const albumStore = useAlbumStore()
+  const deezerStore = useDeezerStore()
 
   // URL de l'API pour le message d'erreur
   const apiUrl = import.meta.env.VITE_API_URL
@@ -128,7 +128,7 @@
   // Liste des artistes pour le v-select (sans doublons)
   const artistNames = computed(() => {
     const list = []
-    for (const album of albumStore.albums) {
+    for (const album of deezerStore.albums) {
       if (!list.includes(album.artist)) {
         list.push(album.artist)
       }
@@ -138,8 +138,8 @@
 
   // Étape 1 : filtrer par artiste
   const filteredByArtist = computed(() => {
-    if (!selectedArtist.value) return albumStore.albums
-    return albumStore.albums.filter(album =>
+    if (!selectedArtist.value) return deezerStore.albums
+    return deezerStore.albums.filter(album =>
       album.artist === selectedArtist.value,
     )
   })

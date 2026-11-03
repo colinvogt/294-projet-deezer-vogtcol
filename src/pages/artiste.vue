@@ -2,7 +2,7 @@
   <v-container>
     <h1 class="text-h3 text-center my-6">
       Artistes
-      <span class="text-subtitle-1">({{ albumStore.artistes.length }})</span>
+      <span class="text-subtitle-1">({{ deezerStore.artistes.length }})</span>
     </h1>
 
     <!-- Barre de recherche, filtre et tri -->
@@ -58,7 +58,7 @@
     </v-row>
 
     <!-- État 1 : Loading -->
-    <v-row v-if="albumStore.isLoading">
+    <v-row v-if="deezerStore.isLoading">
       <v-col
         v-for="n in 8"
         :key="n"
@@ -76,7 +76,7 @@
 
     <!-- État 2 : Erreur -->
     <v-alert
-      v-else-if="albumStore.artistes.length === 0"
+      v-else-if="deezerStore.artistes.length === 0"
       class="mb-6"
       type="error"
       variant="tonal"
@@ -121,10 +121,10 @@
 </template>
 
 <script setup>
-  import useAlbumStore from '@/stores/albumStore'
+  import useDeezerStore from '@/stores/deezerStore.js'
   import { getImageUrl } from '@/utils/imageUrl.js'
 
-  const albumStore = useAlbumStore()
+  const deezerStore = useDeezerStore()
 
   // URL de l'API pour le message d'erreur
   const apiUrl = import.meta.env.VITE_API_URL
@@ -138,7 +138,7 @@
   // Chaque artiste a plusieurs genres : on parcourt les artistes, puis leurs genres
   const genres = computed(() => {
     const list = []
-    for (const artiste of albumStore.artistes) {
+    for (const artiste of deezerStore.artistes) {
       for (const genre of artiste.genres) {
         if (!list.includes(genre)) {
           list.push(genre)
@@ -150,8 +150,8 @@
 
   // Étape 1 : filtrer par genre
   const filteredByGenre = computed(() => {
-    if (!selectedGenre.value) return albumStore.artistes
-    return albumStore.artistes.filter(artiste =>
+    if (!selectedGenre.value) return deezerStore.artistes
+    return deezerStore.artistes.filter(artiste =>
       artiste.genres.includes(selectedGenre.value),
     )
   })

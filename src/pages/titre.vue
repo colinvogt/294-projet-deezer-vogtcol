@@ -58,7 +58,7 @@
     </v-row>
 
     <!-- État 1 : Loading -->
-    <v-row v-if="albumStore.isLoading">
+    <v-row v-if="deezerStore.isLoading">
       <v-col
         v-for="n in 8"
         :key="n"
@@ -76,7 +76,7 @@
 
     <!-- État 2 : Erreur -->
     <v-alert
-      v-else-if="albumStore.tracks.length === 0"
+      v-else-if="deezerStore.tracks.length === 0"
       class="mb-6"
       type="error"
       variant="tonal"
@@ -131,10 +131,10 @@
 </template>
 
 <script setup>
-  import useAlbumStore from '@/stores/albumStore'
+  import useDeezerStore from '@/stores/deezerStore.js'
   import { getImageUrl } from '@/utils/imageUrl.js'
 
-  const albumStore = useAlbumStore()
+  const deezerStore = useDeezerStore()
 
   // URL de l'API pour le message d'erreur
   const apiUrl = import.meta.env.VITE_API_URL
@@ -147,7 +147,7 @@
   // Liste des artistes pour le v-select (sans doublons)
   const artistNames = computed(() => {
     const list = []
-    for (const track of albumStore.tracks) {
+    for (const track of deezerStore.tracks) {
       if (!list.includes(track.artist)) {
         list.push(track.artist)
       }
@@ -157,8 +157,8 @@
 
   // Étape 1 : filtrer par artiste
   const filteredByArtist = computed(() => {
-    if (!selectedArtist.value) return albumStore.tracks
-    return albumStore.tracks.filter(track =>
+    if (!selectedArtist.value) return deezerStore.tracks
+    return deezerStore.tracks.filter(track =>
       track.artist === selectedArtist.value,
     )
   })

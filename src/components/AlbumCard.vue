@@ -41,7 +41,6 @@
       required: true,
     },
   })
-
   // "2025-03-28" -> "28.03.2025"
   function formatDate (date) {
     if (!date) return ''

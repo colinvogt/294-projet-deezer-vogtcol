@@ -10,7 +10,7 @@
     </v-btn>
 
     <v-skeleton-loader
-      v-if="albumStore.isLoading"
+      v-if="deezerStore.isLoading"
       type="image, article"
     />
 
@@ -46,11 +46,11 @@
 </template>
 
 <script setup>
-  import useAlbumStore from '@/stores/albumStore'
+  import useDeezerStore from '@/stores/deezerStore.js'
   import { getImageUrl } from '@/utils/imageUrl'
 
   const route = useRoute()
-  const albumStore = useAlbumStore()
+  const deezerStore = useDeezerStore()
 
-  const album = computed(() => albumStore.getAlbumById(route.params.id))
+  const album = computed(() => deezerStore.getAlbumById(route.params.id))
 </script>
