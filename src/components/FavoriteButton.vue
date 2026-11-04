@@ -55,25 +55,3 @@
     showSnackbar.value = true
   }
 </script>
-
-<style scoped>
-/* Battement du cœur quand l'élément devient favori */
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  25% {
-    transform: scale(1.5);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  75% {
-    transform: scale(2);
-  }
-}
-
-.favorite-active {
-  animation: heartbeat 0.6s ease-in-out;
-}
-</style>
