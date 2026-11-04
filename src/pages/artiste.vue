@@ -66,25 +66,16 @@
         md="4"
         sm="6"
       >
-        <v-card hover>
-          <v-img
-            :alt="artiste.name"
-            cover
-            height="200"
-            :src="getImageUrl(artiste.image)"
-          />
-          <v-card-title>{{ artiste.name }}</v-card-title>
-          <v-card-subtitle>{{ artiste.genres.join(', ') }}</v-card-subtitle>
-        </v-card>
+        <artiste-card :artiste="artiste" />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
+  import ArtisteCard from '@/components/ArtisteCard.vue'
   import BarreRecherche from '@/components/BarreRecherche.vue'
   import useDeezerStore from '@/stores/deezerStore.js'
-  import { getImageUrl } from '@/utils/imageUrl.js'
 
   const deezerStore = useDeezerStore()
 

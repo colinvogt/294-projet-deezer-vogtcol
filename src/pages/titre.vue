@@ -66,26 +66,7 @@
         md="4"
         sm="6"
       >
-        <v-card hover>
-          <v-img
-            :alt="track.title"
-            cover
-            height="200"
-            :src="getImageUrl(track.image)"
-          />
-          <v-card-title>{{ track.title }}</v-card-title>
-          <v-card-subtitle>{{ track.artist }}</v-card-subtitle>
-          <v-card-text class="d-flex align-center">
-            <span>{{ formatDuration(track.duration) }}</span>
-            <v-chip
-              v-if="track.explicit"
-              class="ml-2"
-              size="x-small"
-            >
-              Explicit
-            </v-chip>
-          </v-card-text>
-        </v-card>
+        <titre-card :track="track" />
       </v-col>
     </v-row>
   </v-container>
@@ -93,8 +74,8 @@
 
 <script setup>
   import BarreRecherche from '@/components/BarreRecherche.vue'
+  import TitreCard from '@/components/TitreCard.vue'
   import useDeezerStore from '@/stores/deezerStore.js'
-  import { getImageUrl } from '@/utils/imageUrl.js'
 
   const deezerStore = useDeezerStore()
 
@@ -146,12 +127,5 @@
 
   function toggleSort () {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
-  }
-
-  // 209 secondes -> "3:29"
-  function formatDuration (seconds) {
-    const minutes = Math.floor(seconds / 60)
-    const rest = String(seconds % 60).padStart(2, '0')
-    return `${minutes}:${rest}`
   }
 </script>
