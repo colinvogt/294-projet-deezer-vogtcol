@@ -6,56 +6,17 @@
     </h1>
 
     <!-- Barre de recherche, filtre et tri -->
-    <v-row class="mb-4">
-      <v-col
-        cols="12"
-        md="4"
-        sm="6"
-      >
-        <v-text-field
-          v-model="searchQuery"
-          clearable
-          density="compact"
-          hide-details
-          label="Rechercher un artiste"
-          prepend-inner-icon="mdi-magnify"
-          variant="outlined"
-        />
-      </v-col>
-
-      <v-col
-        cols="12"
-        md="4"
-        sm="6"
-      >
-        <v-select
-          v-model="selectedGenre"
-          clearable
-          density="compact"
-          hide-details
-          :items="genres"
-          label="Filtrer par genre"
-          prepend-inner-icon="mdi-filter"
-          variant="outlined"
-        />
-      </v-col>
-
-      <v-col
-        class="d-flex align-center"
-        cols="12"
-        md="4"
-      >
-        <v-btn
-          :prepend-icon="sortOrder === 'asc'
-            ? 'mdi-sort-alphabetical-ascending'
-            : 'mdi-sort-alphabetical-descending'"
-          variant="outlined"
-          @click="toggleSort"
-        >
-          Tri {{ sortOrder === 'asc' ? 'A → Z' : 'Z → A' }}
-        </v-btn>
-      </v-col>
-    </v-row>
+    <barre-recherche
+      :filter="selectedGenre"
+      filter-label="Filtrer par genre"
+      :items="genres"
+      :search="searchQuery"
+      search-label="Rechercher un artiste"
+      :sort-order="sortOrder"
+      @change-filter="selectedGenre = $event"
+      @change-search="searchQuery = $event"
+      @toggle-sort="toggleSort"
+    />
 
     <!-- État 1 : Loading -->
     <v-row v-if="deezerStore.isLoading">
@@ -121,6 +82,7 @@
 </template>
 
 <script setup>
+  import BarreRecherche from '@/components/BarreRecherche.vue'
   import useDeezerStore from '@/stores/deezerStore.js'
   import { getImageUrl } from '@/utils/imageUrl.js'
 
