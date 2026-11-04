@@ -5,6 +5,29 @@
       <span class="text-subtitle-1">({{ deezerStore.totalFavorites }})</span>
     </h1>
 
+    <v-progress-linear
+      v-if="isLoading"
+      aria-label="Chargement des favoris"
+      class="mb-6"
+      indeterminate
+    />
+
+    <v-alert
+      v-if="!isLoading && unavailableCount > 0"
+      class="mb-6"
+      type="warning"
+      variant="tonal"
+    >
+      Certains favoris sont indisponibles.
+      <v-btn
+        class="ml-2"
+        variant="text"
+        @click="loadFavoriteItems"
+      >
+        Réessayer
+      </v-btn>
+    </v-alert>
+
     <!-- Message si aucun favori -->
     <v-alert
       v-if="deezerStore.totalFavorites === 0"
@@ -83,5 +106,21 @@
   import TitreCard from '@/components/TitreCard.vue'
   import useDeezerStore from '@/stores/deezerStore.js'
 
-const deezerStore = useDeezerStore()
+  const deezerStore = useDeezerStore()
+  const isLoading = ref(false)
+  const unavailableCount = computed(() => deezerStore.totalFavorites
+    - deezerStore.getFavoriteAlbums.length
+    - deezerStore.getFavoriteArtistes.length
+    - deezerStore.getFavoriteTracks.length)
+
+  async function loadFavoriteItems () {
+    isLoading.value = true
+    try {
+      await deezerStore.fetchFavorites()
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  onMounted(loadFavoriteItems)
 </script>

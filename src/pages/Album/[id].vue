@@ -10,7 +10,7 @@
     </v-btn>
 
     <v-skeleton-loader
-      v-if="deezerStore.isLoading"
+      v-if="isLoading"
       type="image, article"
     />
 
@@ -19,7 +19,7 @@
       type="error"
       variant="tonal"
     >
-      Album non trouvé.
+      {{ errorMessage || 'Album non trouvé.' }}
     </v-alert>
 
     <v-card
@@ -53,4 +53,28 @@
   const deezerStore = useDeezerStore()
 
   const album = computed(() => deezerStore.getAlbumById(route.params.id))
+  const isLoading = ref(false)
+  const errorMessage = ref('')
+
+  watch(() => route.params.id, async (routeId, _, onCleanup) => {
+    let active = true
+    onCleanup(() => {
+      active = false
+    })
+
+    errorMessage.value = ''
+    const id = Number(routeId)
+    isLoading.value = /^[1-9]\d*$/.test(routeId) && Number.isSafeInteger(id)
+    if (!isLoading.value) return
+
+    try {
+      await deezerStore.fetchItem('albums', id)
+    } catch (error) {
+      if (active && error.response?.status !== 404) {
+        errorMessage.value = 'Impossible de charger l’album. Vérifiez votre connexion.'
+      }
+    } finally {
+      if (active) isLoading.value = false
+    }
+  }, { immediate: true })
 </script>

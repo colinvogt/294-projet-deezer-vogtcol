@@ -8,14 +8,9 @@
 
 <script setup>
 
-  // Import du store Pokémon
-  import useAlbumStore from '@/stores/deezerStore.js'
+  import useDeezerStore from '@/stores/deezerStore.js'
 
-  // Initialisation du store au montage de l'application
-  // onMounted est auto-importé grâce à unplugin-auto-import
-  onMounted(async () => {
-    const pokemonStore = useAlbumStore()
-    // init() charge les Albums et les Artistes en parallèle
-    await pokemonStore.init()
-  })
+  const deezerStore = useDeezerStore()
+  deezerStore.loadFavorites()
+  onMounted(() => deezerStore.init())
 </script>
