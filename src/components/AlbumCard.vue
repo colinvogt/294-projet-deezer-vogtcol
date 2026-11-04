@@ -29,10 +29,20 @@
         Explicit
       </v-chip>
     </v-card-text>
+
+    <!-- Actions de la carte : le bouton cœur est poussé à droite par v-spacer -->
+    <v-card-actions>
+      <v-spacer />
+      <favorite-button
+        :item="album"
+        type="albums"
+      />
+    </v-card-actions>
   </v-card>
 </template>
 
 <script setup>
+  import FavoriteButton from '@/components/FavoriteButton.vue'
   import { getImageUrl } from '@/utils/imageUrl.js'
 
   defineProps({
@@ -41,6 +51,7 @@
       required: true,
     },
   })
+
   // "2025-03-28" -> "28.03.2025"
   function formatDate (date) {
     if (!date) return ''
