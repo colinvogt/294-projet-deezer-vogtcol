@@ -9,10 +9,6 @@ const endpoints = { albums: 'albums', artistes: 'artists', tracks: 'tracks' }
  */
 const useDeezerStore = defineStore('deezer', {
   state: () => ({
-    albums: [],
-    artistes: [],
-    tracks: [],
-    isLoading: false,
     itemsById: { albums: {}, artistes: {}, tracks: {} },
     // Favoris : on ne garde que les IDs, rangés par type
     // (un album, un artiste et un titre peuvent avoir le même ID)
@@ -24,21 +20,11 @@ const useDeezerStore = defineStore('deezer', {
   }),
 
   getters: {
-    totalAlbum: state => state.albums.length,
-
-    getItemById: state => (type, id) => {
-      return state[type].find(item => String(item.id) === String(id)) ?? state.itemsById[type][id]
-    },
+    getItemById: state => (type, id) => state.itemsById[type][id],
 
     getAlbumById () {
       return albumId => {
         return this.getItemById('albums', albumId)
-      }
-    },
-
-    getArtistById () {
-      return artistId => {
-        return this.getItemById('artistes', artistId)
       }
     },
 
@@ -81,75 +67,18 @@ const useDeezerStore = defineStore('deezer', {
   },
 
   actions: {
-    async init () {
-      this.isLoading = true
-
-      try {
-        await Promise.all([
-          this.fetchAlbums({ withLoader: false }),
-          this.fetchArtiste({ withLoader: false }),
-          this.fetchTracks({ withLoader: false }),
-        ])
-      } catch (error) {
-        console.error('Erreur lors de l\'initialisation:', error)
-      } finally {
-        this.isLoading = false
-      }
-    },
-
-    async fetchAlbums ({ withLoader = true } = {}) {
-      if (withLoader) {
-        this.isLoading = true
+    async fetchCataloguePage (type, params, signal) {
+      const { data } = await api.get(`/${endpoints[type]}`, { params, signal, timeout: 10_000 })
+      const { data: items, pagination } = data ?? {}
+      if (!Array.isArray(items) || !pagination) {
+        throw new Error('Réponse inattendue lors du chargement du catalogue.')
       }
 
-      try {
-        const response = await api.get('/albums?limit=100')
-        // L'API renvoie { data: [...] } : les albums sont dans response.data.data
-        this.albums = response.data.data
-      } catch (error) {
-        console.error('Erreur lors du chargement des albums:', error.message)
-        this.albums = []
-      } finally {
-        if (withLoader) {
-          this.isLoading = false
-        }
+      // Une carte déjà chargée peut aussi servir à la fiche détail ou aux favoris.
+      for (const item of items) {
+        this.itemsById[type][item.id] = item
       }
-    },
-
-    async fetchArtiste ({ withLoader = true } = {}) {
-      if (withLoader) {
-        this.isLoading = true
-      }
-
-      try {
-        const response = await api.get('/artists?limit=100')
-        this.artistes = response.data.data ?? response.data
-      } catch (error) {
-        console.error('Erreur lors du chargement des artistes:', error.message)
-        this.artistes = []
-      } finally {
-        if (withLoader) {
-          this.isLoading = false
-        }
-      }
-    },
-
-    async fetchTracks ({ withLoader = true } = {}) {
-      if (withLoader) {
-        this.isLoading = true
-      }
-
-      try {
-        const response = await api.get('/tracks?limit=100')
-        this.tracks = response.data.data ?? response.data
-      } catch (error) {
-        console.error('Erreur lors du chargement des titres:', error.message)
-        this.tracks = []
-      } finally {
-        if (withLoader) {
-          this.isLoading = false
-        }
-      }
+      return { items, pagination }
     },
 
     async fetchItem (type, id) {

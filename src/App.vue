@@ -12,5 +12,4 @@
 
   const deezerStore = useDeezerStore()
   deezerStore.loadFavorites()
-  onMounted(() => deezerStore.init())
 </script>
