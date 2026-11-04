@@ -2,6 +2,7 @@
   <v-card
     class="h-100"
     hover
+    :to="`/artiste/${artiste.id}`"
   >
     <v-img
       :alt="artiste.name"

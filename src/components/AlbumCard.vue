@@ -43,6 +43,7 @@
 
 <script setup>
   import FavoriteButton from '@/components/FavoriteButton.vue'
+  import { formatDate } from '@/utils/formatCatalogue.js'
   import { getImageUrl } from '@/utils/imageUrl.js'
 
   defineProps({
@@ -51,10 +52,4 @@
       required: true,
     },
   })
-
-  // "2025-03-28" -> "28.03.2025"
-  function formatDate (date) {
-    if (!date) return ''
-    return new Date(date).toLocaleDateString('fr-CH')
-  }
 </script>

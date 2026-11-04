@@ -2,6 +2,7 @@
   <v-card
     class="h-100"
     hover
+    :to="`/titre/${track.id}`"
   >
     <v-img
       :alt="track.title"
@@ -51,20 +52,14 @@
 </template>
 
 <script setup>
-import FavoriteButton from '@/components/FavoriteButton.vue'
-import { getImageUrl } from '@/utils/imageUrl.js'
+  import FavoriteButton from '@/components/FavoriteButton.vue'
+  import { formatDuration } from '@/utils/formatCatalogue.js'
+  import { getImageUrl } from '@/utils/imageUrl.js'
 
-defineProps({
-  track: {
-    type: Object,
-    required: true,
-  },
-})
-
-// 209 secondes -> "3:29"
-function formatDuration (seconds) {
-  const minutes = Math.floor(seconds / 60)
-  const rest = String(seconds % 60).padStart(2, '0')
-  return `${minutes}:${rest}`
-}
+  defineProps({
+    track: {
+      type: Object,
+      required: true,
+    },
+  })
 </script>

@@ -22,12 +22,6 @@ const useDeezerStore = defineStore('deezer', {
   getters: {
     getItemById: state => (type, id) => state.itemsById[type][id],
 
-    getAlbumById () {
-      return albumId => {
-        return this.getItemById('albums', albumId)
-      }
-    },
-
     // Nombre total de favoris (albums + artistes + titres)
     totalFavorites: state => {
       return state.favorites.albums.length
@@ -81,7 +75,7 @@ const useDeezerStore = defineStore('deezer', {
       return { items, pagination }
     },
 
-    async fetchItem (type, id) {
+    async fetchItem (type, id, signal) {
       const numericId = Number(id)
       if (!Number.isSafeInteger(numericId) || numericId <= 0) {
         throw new Error('Identifiant invalide.')
@@ -92,7 +86,7 @@ const useDeezerStore = defineStore('deezer', {
         return cachedItem
       }
 
-      const { data } = await api.get(`/${endpoints[type]}/${numericId}`, { timeout: 10_000 })
+      const { data } = await api.get(`/${endpoints[type]}/${numericId}`, { signal, timeout: 10_000 })
       if (data?.id !== numericId) {
         throw new Error('Réponse inattendue lors du chargement de cet élément.')
       }
