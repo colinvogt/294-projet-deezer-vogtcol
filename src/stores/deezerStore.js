@@ -1,7 +1,20 @@
 import { defineStore } from 'pinia'
 import api from '@/plugins/axios.js'
+import { useAppStore } from '@/stores/app.js'
 
 const endpoints = { albums: 'albums', artistes: 'artists', tracks: 'tracks' }
+
+function normalizeIds (ids) {
+  if (!Array.isArray(ids)) {
+    return []
+  }
+  // Les anciennes sauvegardes peuvent mélanger 1 et "1" pour le même favori.
+  const validIds = ids
+    .filter(id => (typeof id === 'number' || typeof id === 'string') && /^[1-9]\d*$/.test(String(id)))
+    .map(Number)
+    .filter(id => Number.isSafeInteger(id))
+  return [...new Set(validIds)]
+}
 
 /**
  * Store Pinia pour gérer les données Deezer (albums, artistes, titres).
@@ -21,6 +34,12 @@ const useDeezerStore = defineStore('deezer', {
 
   getters: {
     getItemById: state => (type, id) => state.itemsById[type][id],
+
+    unavailableFavorites: state => Object.keys(endpoints).flatMap(type =>
+      state.favorites[type]
+        .filter(id => !state.itemsById[type][id])
+        .map(id => ({ type, id })),
+    ),
 
     // Nombre total de favoris (albums + artistes + titres)
     totalFavorites: state => {
@@ -108,27 +127,30 @@ const useDeezerStore = defineStore('deezer', {
         const savedFavorites = localStorage.getItem('deezer_favorites')
         if (savedFavorites) {
           const data = JSON.parse(savedFavorites)
-          this.favorites = {
-            albums: Array.isArray(data.albums) ? data.albums : [],
-            artistes: Array.isArray(data.artistes) ? data.artistes : [],
-            tracks: Array.isArray(data.tracks) ? data.tracks : [],
+          if (!data || typeof data !== 'object' || Array.isArray(data)) {
+            throw new Error('Format des favoris invalide.')
           }
-          console.log('Favoris chargés :', this.totalFavorites, 'éléments')
+          this.favorites = {
+            albums: normalizeIds(data.albums),
+            artistes: normalizeIds(data.artistes),
+            tracks: normalizeIds(data.tracks),
+          }
         } else {
           this.favorites = { albums: [], artistes: [], tracks: [] }
         }
-      } catch (error) {
-        console.error('Erreur lors du chargement des favoris :', error)
+      } catch {
         this.favorites = { albums: [], artistes: [], tracks: [] }
+        useAppStore().notify('Impossible de lire les favoris enregistrés dans ce navigateur.', 'warning')
       }
     },
 
     // Sauvegarde les favoris dans le localStorage
-    saveFavorites () {
+    saveFavorites (message) {
       try {
         localStorage.setItem('deezer_favorites', JSON.stringify(this.favorites))
-      } catch (error) {
-        console.error('Erreur lors de la sauvegarde des favoris :', error)
+        useAppStore().notify(message)
+      } catch {
+        useAppStore().notify('Favoris modifiés pour cette session, mais la sauvegarde dans le navigateur a échoué.', 'warning')
       }
     },
 
@@ -147,7 +169,13 @@ const useDeezerStore = defineStore('deezer', {
       }
 
       // Sauvegarder après chaque changement
-      this.saveFavorites()
+      this.saveFavorites(favoriteIndex === -1 ? 'Ajouté aux favoris' : 'Retiré des favoris')
+    },
+
+    // Permet aussi de retirer un favori qui ne peut plus être chargé depuis l'API.
+    removeFavorite (type, id) {
+      this.favorites[type] = this.favorites[type].filter(favoriteId => String(favoriteId) !== String(id))
+      this.saveFavorites('Retiré des favoris')
     },
   },
 })

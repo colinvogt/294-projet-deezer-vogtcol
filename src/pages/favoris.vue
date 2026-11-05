@@ -2,7 +2,7 @@
   <v-container>
     <h1 class="text-h3 text-center my-6">
       Mes favoris
-      <span class="text-subtitle-1">({{ deezerStore.totalFavorites }})</span>
+      <span aria-live="polite" class="text-subtitle-1">({{ deezerStore.totalFavorites }})</span>
     </h1>
 
     <v-progress-linear
@@ -13,12 +13,12 @@
     />
 
     <v-alert
-      v-if="!isLoading && unavailableCount > 0"
+      v-if="!isLoading && deezerStore.unavailableFavorites.length > 0"
       class="mb-6"
       type="warning"
       variant="tonal"
     >
-      Certains favoris sont indisponibles.
+      Certains favoris n'ont pas pu être chargés. Vous pouvez réessayer ou les retirer de vos favoris.
       <v-btn
         class="ml-2"
         variant="text"
@@ -26,6 +26,19 @@
       >
         Réessayer
       </v-btn>
+      <ul class="mt-2 pl-4">
+        <li v-for="favorite in deezerStore.unavailableFavorites" :key="`${favorite.type}-${favorite.id}`">
+          {{ typeLabels[favorite.type] }} n° {{ favorite.id }}
+          <v-btn
+            :aria-label="`Retirer des favoris : ${typeLabels[favorite.type]} n° ${favorite.id}`"
+            size="small"
+            variant="text"
+            @click="deezerStore.removeFavorite(favorite.type, favorite.id)"
+          >
+            Retirer
+          </v-btn>
+        </li>
+      </ul>
     </v-alert>
 
     <!-- Message si aucun favori -->
@@ -108,10 +121,7 @@
 
   const deezerStore = useDeezerStore()
   const isLoading = ref(false)
-  const unavailableCount = computed(() => deezerStore.totalFavorites
-    - deezerStore.getFavoriteAlbums.length
-    - deezerStore.getFavoriteArtistes.length
-    - deezerStore.getFavoriteTracks.length)
+  const typeLabels = { albums: 'Album', artistes: 'Artiste', tracks: 'Titre' }
 
   async function loadFavoriteItems () {
     isLoading.value = true

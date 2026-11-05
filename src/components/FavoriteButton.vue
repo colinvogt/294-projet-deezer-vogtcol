@@ -7,21 +7,14 @@
     * L'icône change selon l'état (cœur plein ou vide), la couleur aussi
   -->
   <v-btn
-    :class="{ 'favorite-active': deezerStore.isFavorite(type, item) }"
-    :color="deezerStore.isFavorite(type, item) ? 'red' : ''"
-    :icon="deezerStore.isFavorite(type, item) ? 'mdi-heart' : 'mdi-heart-outline'"
+    :aria-label="`${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'} : ${item.title ?? item.name}`"
+    :aria-pressed="isFavorite"
+    :class="{ 'favorite-active': isFavorite }"
+    :color="isFavorite ? 'red' : ''"
+    :icon="isFavorite ? 'mdi-heart' : 'mdi-heart-outline'"
     variant="text"
-    @click.stop.prevent="handleToggleFavorite()"
+    @click.stop.prevent="deezerStore.toggleFavorite(type, item)"
   />
-
-  <!-- Message de confirmation (disparaît après 2 secondes) -->
-  <v-snackbar
-    v-model="showSnackbar"
-    color="primary"
-    :timeout="2000"
-  >
-    {{ snackbarMessage }}
-  </v-snackbar>
 </template>
 
 <script setup>
@@ -43,15 +36,23 @@
 
   const deezerStore = useDeezerStore()
 
-  // Snackbar de confirmation
-  const showSnackbar = ref(false)
-  const snackbarMessage = ref('')
-
-  // Toggle le favori et affiche le snackbar
-  function handleToggleFavorite() {
-    const wasFavorite = deezerStore.isFavorite(props.type, props.item)
-    deezerStore.toggleFavorite(props.type, props.item)
-    snackbarMessage.value = wasFavorite ? 'Retiré des favoris' : 'Ajouté aux favoris'
-    showSnackbar.value = true
-  }
+  const isFavorite = computed(() => deezerStore.isFavorite(props.type, props.item))
 </script>
+
+<style scoped>
+.favorite-active {
+  animation: heartbeat 0.6s ease-in-out;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favorite-active {
+    animation: none;
+  }
+}
+</style>
