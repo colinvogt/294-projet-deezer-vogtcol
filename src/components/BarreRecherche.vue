@@ -41,11 +41,12 @@
 
     <!-- Bouton de tri : alterne entre A → Z et Z → A -->
     <v-col
-      class="d-flex align-center"
+      class="d-flex align-start"
       cols="12"
       md="4"
     >
       <v-btn
+        height="40"
         :prepend-icon="sortOrder === 'asc'
           ? 'mdi-sort-alphabetical-ascending'
           : 'mdi-sort-alphabetical-descending'"
