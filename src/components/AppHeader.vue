@@ -4,13 +4,18 @@
       class="d-flex align-center"
       :class="{ 'justify-space-between px-2': isCompact }"
     >
-      <v-avatar
-        class="pa-0 cursor-pointer flex-shrink-0"
+      <router-link
+        aria-label="Vogtunes, retour à l'accueil"
+        class="flex-shrink-0 rounded-circle"
         :class="isCompact ? 'mr-2' : 'mr-4'"
-        image="@/assets/logo.png"
-        :size="isCompact ? 36 : 64"
-        @click="$router.push('/')"
-      />
+        to="/"
+      >
+        <v-avatar
+          class="pa-0"
+          image="@/assets/logo.png"
+          :size="isCompact ? 36 : 64"
+        />
+      </router-link>
 
       <v-toolbar-title v-if="!isCompact">Vogtunes</v-toolbar-title>
 
@@ -44,3 +49,10 @@
     { title: 'Favoris', path: '/favoris', icon: 'mdi-heart' },
   ]
 </script>
+
+<style scoped>
+a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+</style>

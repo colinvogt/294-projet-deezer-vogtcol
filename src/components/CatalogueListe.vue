@@ -13,7 +13,7 @@
       :search-label="searchLabel"
       :sort-order="sortOrder"
       @change-filter="selectedFilter = $event"
-      @change-search="searchQuery = $event"
+      @change-search="searchQuery = $event ?? ''"
       @toggle-sort="toggleSort"
     />
 
@@ -118,7 +118,7 @@
       page,
       limit: pageSize,
       q: searchQuery.value?.trim() || undefined,
-      [props.filterField]: selectedFilter.value ?? undefined,
+      [props.filterField]: selectedFilter.value?.trim() || undefined,
     }
 
     try {

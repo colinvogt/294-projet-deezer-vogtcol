@@ -24,14 +24,16 @@
       md="4"
       sm="6"
     >
-      <v-select
+      <v-combobox
         clearable
         density="compact"
-        hide-details
+        hint="Choisissez une suggestion ou saisissez une valeur puis Entrée."
         :items="items"
         :label="filterLabel"
         :model-value="filter"
+        persistent-hint
         prepend-inner-icon="mdi-filter"
+        :return-object="false"
         variant="outlined"
         @update:model-value="$emit('change-filter', $event)"
       />
@@ -50,7 +52,7 @@
         variant="outlined"
         @click="$emit('toggle-sort')"
       >
-        Tri {{ sortOrder === 'asc' ? 'A → Z' : 'Z → A' }}
+        Tri {{ sortOrder === 'asc' ? 'A → Z' : 'Z → A' }} (affichés)
       </v-btn>
     </v-col>
   </v-row>
