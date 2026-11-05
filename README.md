@@ -227,7 +227,11 @@ Le site Vercel existant a été consulté séparément : l’accueil et le recha
 
 ChatGPT / Codex (OpenAI) a été utilisé pour comprendre le code, proposer et écrire des modifications, déboguer et rédiger la documentation. La version précise de chaque échange n’a pas été consignée.
 
-L’aide a été importante et comprend du code généré puis adapté au projet, pas seulement des conseils. Elle a notamment porté sur :
+### Travail personnel et aide reçue
+
+J’ai écrit moi-même le code de départ, ligne par ligne, en suivant le tutoriel Pokédex Vuetify jusqu’à la séquence des favoris et en l’adaptant à mon projet musical. Lorsque je ne comprenais pas une erreur, j’ai demandé de l’aide à l’IA pour comprendre mon problème et corriger les bugs.
+
+À partir de l’adaptation des favoris, dont le fonctionnement différait de l’exemple du tutoriel, j’ai demandé une aide plus directe à l’IA. Cette aide a ensuite compris des propositions et des modifications de code appliquées au projet, ainsi que des explications détaillées. Les interventions réalisées avec l’IA ont notamment porté sur :
 
 - la pagination et la recherche distante en respectant la limite de 100 éléments par requête ;
 - le chargement des favoris par identifiant ;
