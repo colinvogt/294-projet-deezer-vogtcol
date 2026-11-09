@@ -15,6 +15,7 @@ Lire le README à la racine pour l’installation, l’architecture et les limit
 - JavaScript et composants Vue avec `<script setup>` ; conserver une structure compréhensible pour un débutant.
 - Les pages de `src/pages/` génèrent les routes. Les fichiers à point pour les détails artistes/titres sont intentionnels.
 - `deezerStore.js` centralise les appels Axios, le cache et les identifiants favoris.
+- Un secours demandé par Colin utilise `src/data/mock.json`, `src/services/mockCatalogue.js` et les images de `public/mock/` quand l’API est indisponible. Conserver les vrais identifiants et les favoris absents de cette sélection ; ne pas mélanger les résultats des deux sources. Le bandeau permet de recharger pour retenter l’API.
 - `app.js` gère la notification affichée dans `App.vue`, qui survit au retrait d’une carte.
 - Respecter la limite API de 100 éléments par requête. Les listes utilisent actuellement 24 éléments par page.
 - `.env.example` est le modèle public ; ne pas commiter `.env` ni des secrets.
