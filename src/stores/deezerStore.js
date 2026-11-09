@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '@/plugins/axios.js'
+import { createMockCache, getMockItem, getMockPage, shouldUseMock } from '@/services/mockCatalogue.js'
 import { useAppStore } from '@/stores/app.js'
 
 const endpoints = { albums: 'albums', artistes: 'artists', tracks: 'tracks' }
@@ -23,6 +24,7 @@ function normalizeIds (ids) {
 const useDeezerStore = defineStore('deezer', {
   state: () => ({
     itemsById: { albums: {}, artistes: {}, tracks: {} },
+    isMock: false,
     // Favoris : on ne garde que les IDs, rangés par type
     // (un album, un artiste et un titre peuvent avoir le même ID)
     favorites: {
@@ -80,8 +82,34 @@ const useDeezerStore = defineStore('deezer', {
   },
 
   actions: {
+    activateMock () {
+      if (this.isMock) {
+        return
+      }
+      // Remplacer le cache évite de mélanger le catalogue distant et la sélection locale.
+      // Les identifiants favoris restent conservés, même s'ils ne figurent pas dans le mock.
+      this.itemsById = createMockCache()
+      this.isMock = true
+    },
+
     async fetchCataloguePage (type, params, signal) {
-      const { data } = await api.get(`/${endpoints[type]}`, { params, signal, timeout: 10_000 })
+      let data
+      if (!this.isMock) {
+        try {
+          const response = await api.get(`/${endpoints[type]}`, { params, signal, timeout: 10_000 })
+          data = response.data
+        } catch (error) {
+          if (!shouldUseMock(error, signal)) {
+            throw error
+          }
+          this.activateMock()
+        }
+      }
+      // Une autre requête peut avoir activé le mock pendant notre attente.
+      if (this.isMock) {
+        data = getMockPage(type, params)
+      }
+
       const { data: items, pagination } = data ?? {}
       // Vérifier toute la réponse avant de modifier le cache partagé.
       const validItems = Array.isArray(items)
@@ -113,7 +141,22 @@ const useDeezerStore = defineStore('deezer', {
         return cachedItem
       }
 
-      const { data } = await api.get(`/${endpoints[type]}/${numericId}`, { signal, timeout: 10_000 })
+      let data
+      if (!this.isMock) {
+        try {
+          const response = await api.get(`/${endpoints[type]}/${numericId}`, { signal, timeout: 10_000 })
+          data = response.data
+        } catch (error) {
+          if (!shouldUseMock(error, signal)) {
+            throw error
+          }
+          this.activateMock()
+        }
+      }
+      if (this.isMock) {
+        data = getMockItem(type, numericId)
+      }
+
       if (data?.id !== numericId) {
         throw new Error('Réponse inattendue lors du chargement de cet élément.')
       }

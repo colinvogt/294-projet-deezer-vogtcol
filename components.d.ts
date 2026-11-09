@@ -16,7 +16,7 @@ declare module 'vue' {
     CatalogueListe: typeof import('./src/components/CatalogueListe.vue')['default']
     FavoriteButton: typeof import('./src/components/FavoriteButton.vue')['default']
     FicheCatalogue: typeof import('./src/components/FicheCatalogue.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    MockNotice: typeof import('./src/components/MockNotice.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TitreCard: typeof import('./src/components/TitreCard.vue')['default']

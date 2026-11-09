@@ -1,0 +1,129 @@
+{
+  "albums": [
+    {
+      "id": 330,
+      "title": "The Slow Rush B-Sides & Remixes",
+      "deezerId": 296647462,
+      "artist": "Tame Impala",
+      "releaseDate": "2022-02-18",
+      "recordType": "album",
+      "explicit": true,
+      "image": "/mock/albums/330.webp"
+    },
+    {
+      "id": 329,
+      "title": "Deadbeat",
+      "deezerId": 837961612,
+      "artist": "Tame Impala",
+      "releaseDate": "2025-10-17",
+      "recordType": "album",
+      "explicit": true,
+      "image": "/mock/albums/329.webp"
+    },
+    {
+      "id": 403,
+      "title": "Random Access Memories (Drumless Edition)",
+      "deezerId": 494309801,
+      "artist": "Daft Punk",
+      "releaseDate": "2023-11-17",
+      "recordType": "album",
+      "explicit": false,
+      "image": "/mock/albums/403.webp"
+    },
+    {
+      "id": 422,
+      "title": "Gemini Rights",
+      "deezerId": 333896087,
+      "artist": "Steve Lacy",
+      "releaseDate": "2022-07-15",
+      "recordType": "album",
+      "explicit": true,
+      "image": "/mock/albums/422.webp"
+    }
+  ],
+  "artistes": [
+    {
+      "id": 206,
+      "name": "Daft Punk",
+      "deezerId": 27,
+      "genres": [
+        "Electro",
+        "Dance"
+      ],
+      "nbAlbum": 38,
+      "nbFan": 5206217,
+      "image": "/mock/artists/206.webp"
+    },
+    {
+      "id": 169,
+      "name": "Tame Impala",
+      "deezerId": 134790,
+      "genres": [
+        "Alternative"
+      ],
+      "nbAlbum": 40,
+      "nbFan": 1136289,
+      "image": "/mock/artists/169.webp"
+    },
+    {
+      "id": 203,
+      "name": "AC/DC",
+      "deezerId": 115,
+      "genres": [
+        "Pop",
+        "Rock"
+      ],
+      "nbAlbum": 27,
+      "nbFan": 9934153,
+      "image": "/mock/artists/203.webp"
+    },
+    {
+      "id": 215,
+      "name": "Steve Lacy",
+      "deezerId": 65574,
+      "genres": [
+        "Alternative",
+        "R&B",
+        "Pop"
+      ],
+      "nbAlbum": 24,
+      "nbFan": 277543,
+      "image": "/mock/artists/215.webp"
+    }
+  ],
+  "tracks": [
+    {
+      "id": 548,
+      "title": "The Less I Know The Better",
+      "deezerId": 103052662,
+      "artist": "Tame Impala",
+      "album": "Currents",
+      "duration": 217,
+      "rank": 941238,
+      "explicit": true,
+      "image": "/mock/tracks/548.webp"
+    },
+    {
+      "id": 1316,
+      "title": "Enemy (from the series Arcane League of Legends)",
+      "deezerId": 1535046792,
+      "artist": "Imagine Dragons",
+      "album": "Enemy (from the series Arcane League of Legends)",
+      "duration": 173,
+      "rank": 902680,
+      "explicit": false,
+      "image": "/mock/tracks/1316.webp"
+    },
+    {
+      "id": 683,
+      "title": "Dark Red",
+      "deezerId": 1860754817,
+      "artist": "Steve Lacy",
+      "album": "Steve Lacy's Demo",
+      "duration": 173,
+      "rank": 909376,
+      "explicit": false,
+      "image": "/mock/tracks/683.webp"
+    }
+  ]
+}
