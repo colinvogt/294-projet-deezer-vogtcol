@@ -11,9 +11,14 @@ declare module 'vue' {
     AlbumCard: typeof import('./src/components/AlbumCard.vue')['default']
     AppFooter: typeof import('./src/components/AppFooter.vue')['default']
     AppHeader: typeof import('./src/components/AppHeader.vue')['default']
+    ArtisteCard: typeof import('./src/components/ArtisteCard.vue')['default']
     BarreRecherche: typeof import('./src/components/BarreRecherche.vue')['default']
+    CatalogueListe: typeof import('./src/components/CatalogueListe.vue')['default']
+    FavoriteButton: typeof import('./src/components/FavoriteButton.vue')['default']
+    FicheCatalogue: typeof import('./src/components/FicheCatalogue.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TitreCard: typeof import('./src/components/TitreCard.vue')['default']
   }
 }
