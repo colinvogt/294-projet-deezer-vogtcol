@@ -25,21 +25,25 @@
       </div>
     </v-card-text>
 
-    <!-- Nombre d'albums et de fans -->
-    <v-card-text class="d-flex align-center">
-      <v-icon
-        class="mr-1"
-        icon="mdi-album"
-        size="small"
-      />
-      <span>{{ artiste.nbAlbum }} album{{ artiste.nbAlbum > 1 ? 's' : '' }}</span>
+    <!-- Ces statistiques sont facultatives dans l'API. Zéro reste une valeur valide. -->
+    <v-card-text class="d-flex flex-wrap align-center ga-3">
+      <span v-if="Number.isFinite(artiste.nbAlbum)" class="d-inline-flex align-center">
+        <v-icon
+          class="mr-1"
+          icon="mdi-album"
+          size="small"
+        />
+        {{ artiste.nbAlbum }} album{{ artiste.nbAlbum > 1 ? 's' : '' }}
+      </span>
 
-      <v-icon
-        class="ml-4 mr-1"
-        icon="mdi-account-multiple"
-        size="small"
-      />
-      <span>{{ artiste.nbFan.toLocaleString('fr-CH') }} fan{{ artiste.nbFan > 1 ? 's' : '' }}</span>
+      <span v-if="Number.isFinite(artiste.nbFan)" class="d-inline-flex align-center">
+        <v-icon
+          class="mr-1"
+          icon="mdi-account-multiple"
+          size="small"
+        />
+        {{ artiste.nbFan.toLocaleString('fr-CH') }} fan{{ artiste.nbFan > 1 ? 's' : '' }}
+      </span>
     </v-card-text>
 
     <!-- Actions de la carte : le bouton cœur est poussé à droite par v-spacer -->

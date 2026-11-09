@@ -83,7 +83,15 @@ const useDeezerStore = defineStore('deezer', {
     async fetchCataloguePage (type, params, signal) {
       const { data } = await api.get(`/${endpoints[type]}`, { params, signal, timeout: 10_000 })
       const { data: items, pagination } = data ?? {}
-      if (!Array.isArray(items) || !pagination) {
+      // Vérifier toute la réponse avant de modifier le cache partagé.
+      const validItems = Array.isArray(items)
+        && items.every(item => Number.isSafeInteger(item?.id) && item.id > 0)
+      const validPagination = pagination
+        && Number.isSafeInteger(pagination.page) && pagination.page >= 1
+        && Number.isSafeInteger(pagination.limit) && pagination.limit >= 1 && pagination.limit <= 100
+        && Number.isSafeInteger(pagination.total) && pagination.total >= 0
+        && Number.isSafeInteger(pagination.pages) && pagination.pages >= 0
+      if (!validItems || !validPagination) {
         throw new Error('Réponse inattendue lors du chargement du catalogue.')
       }
 
