@@ -43,7 +43,7 @@ Le projet s’appuie sur le tutoriel [Pokédex Vuetify de DEVJS](https://devjs.c
 | 1 — Composants et navigation | Props, slots, pages, routes dynamiques | Cartes réutilisables, menu, listes et fiches |
 | 2 — Pinia | State, getters et actions | Cache des éléments et favoris partagés |
 | 3 — Axios et configuration | Requêtes HTTP, `.env`, chargement et erreurs | Client Axios commun et alertes avec nouvelle tentative |
-| 4 — Recherche, filtre et tri | Champs réactifs, événements, tableaux et `computed` | Recherche et filtre dans l’API, tri local dans un `computed` |
+| 4 — Recherche, filtre et tri | `v-model`, tableaux et `computed` | Champs reliés avec `v-model`, recherche et filtre dans l’API, tri local dans un `computed` |
 | 5 — Favoris | Identifiants, localStorage, clic sur le cœur et feedback | Favoris persistants, page dédiée, compteur et notification |
 
 ### Progression retrouvée dans l’historique Git
@@ -197,9 +197,9 @@ Les boutons cœur utilisent `@click.stop.prevent` pour éviter que l’ajout d�
 
 ### Relire le code avant la défense
 
-- **Catalogue**. `BarreRecherche.vue` envoie la saisie à `CatalogueListe.vue`. La liste recommence en page 1 après un changement de recherche ou de filtre. « Charger la suite » demande la page suivante. Le tri réordonne seulement les cartes déjà chargées.
-- **API et secours**. Les listes et les fiches passent par `requestApi` dans le store. Si une panne active le mock, elles lisent les données locales. Le service du mock vérifie d’abord la recherche et les filtres, puis découpe la page.
-- **Favoris**. Le bouton cœur appelle `toggleFavorite`. Le store ajoute l’identifiant ou appelle `removeFavorite`, puis enregistre la liste d’identifiants dans le navigateur. Pour afficher les cartes, il retrouve les objets par leur identifiant.
+- **Catalogue**. Comme dans les [étapes 12 et 13](https://devjs.ch/exercices/pokedex-vuetify/e13.html), `v-model` relie les champs aux variables du catalogue et un `computed` trie une copie des cartes. Vogtunes transmet la recherche et le filtre à l’API pour couvrir aussi les pages pas encore chargées. La liste repart en page 1 quand les critères changent. « Charger la suite » demande la page suivante.
+- **API et secours**. Les listes et les fiches passent par `requestApi` dans le store. Si une panne active le mock, elles lisent les données locales. Le mock applique le filtre, puis la recherche, puis découpe la page.
+- **Favoris**. Le bouton cœur appelle `toggleFavorite`. Le store suit le principe de l’[étape 15](https://devjs.ch/exercices/pokedex-vuetify/e15.html) : chercher la position de l’identifiant, l’ajouter avec `push` ou le retirer avec `splice`, puis sauvegarder dans `localStorage`. Ici, `indexOf(id)` suffit parce que les identifiants sont des nombres. Vogtunes conserve une liste par catégorie. La page Favoris réutilise les mêmes cartes que les catalogues, comme à l’[étape 16](https://devjs.ch/exercices/pokedex-vuetify/e16.html).
 - **Fiches**. `loadDetail` charge la fiche à partir de l’identifiant dans l’URL. `loadRelated` charge ensuite les éléments associés, par exemple les albums d’un artiste.
 
 ### Organisation du travail
@@ -312,7 +312,7 @@ J’ai écrit moi-même le code de départ, ligne par ligne, en suivant le tutor
 - la revue du code et les corrections des notifications, de la persistance, du filtre et de l’accessibilité ;
 - la seconde revue du 9 novembre : contrôles des réponses API, statistiques facultatives, navigation et configuration de vérification GitHub ;
 - l’ajout, à ma demande, du catalogue de secours local, de ses images et du bandeau « Mode démonstration » ;
-- la simplification du code des appels API, des favoris, des listes et des fiches sur une branche dédiée à la préparation de l’oral ;
+- la simplification du code des appels API, des favoris, des listes et des fiches sur une branche dédiée à la préparation de l’oral, avec une adaptation des étapes 12 à 16 du tutoriel ;
 - les tests de la revue et la rédaction de ce README.
 
 La répartition personnelle/IA n’a pas été mesurée. Il n’est donc pas possible d’attribuer honnêtement un pourcentage précis à chaque fichier ou domaine. Les tests de cette revue ont été réalisés avec l’assistance de Codex.
