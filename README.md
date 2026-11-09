@@ -5,7 +5,6 @@ Projet individuel de Colin Vogt pour le module 294, année 2026–2027.
 - [Application publiée sur Vercel](https://294-projet-deezer-vogtcol.vercel.app/)
 - [Dépôt GitHub](https://github.com/colinvogt/294-projet-deezer-vogtcol)
 - [Documentation de l’API pédagogique Deezer](https://apis.divtec.me/api/deezer/docs)
-- [Compte rendu de la revue du code du 5 novembre 2026](docs/revue-code.md)
 
 ## 1. Présentation du projet
 
