@@ -195,6 +195,13 @@ flowchart LR
 
 Les boutons cœur utilisent `@click.stop.prevent` pour éviter que l’ajout d’un favori ouvre aussi la fiche. La notification est affichée dans `App.vue` : elle reste visible quand une carte disparaît de la page favoris.
 
+### Relire le code avant la défense
+
+- **Catalogue**. `BarreRecherche.vue` envoie la saisie à `CatalogueListe.vue`. La liste recommence en page 1 après un changement de recherche ou de filtre. « Charger la suite » demande la page suivante. Le tri réordonne seulement les cartes déjà chargées.
+- **API et secours**. Les listes et les fiches passent par `requestApi` dans le store. Si une panne active le mock, elles lisent les données locales. Le service du mock vérifie d’abord la recherche et les filtres, puis découpe la page.
+- **Favoris**. Le bouton cœur appelle `toggleFavorite`. Le store ajoute l’identifiant ou appelle `removeFavorite`, puis enregistre la liste d’identifiants dans le navigateur. Pour afficher les cartes, il retrouve les objets par leur identifiant.
+- **Fiches**. `loadDetail` charge la fiche à partir de l’identifiant dans l’URL. `loadRelated` charge ensuite les éléments associés, par exemple les albums d’un artiste.
+
 ### Organisation du travail
 
 Les changements sont regroupés par objectif dans des commits `feat:`, `fix:` ou `docs:`. La vérification combine lecture du code, contrôle de style, compilation et tests de parcours. Les composants communs évitent de copier la recherche, les favoris ou les fiches dans chaque catégorie.
@@ -305,6 +312,7 @@ J’ai écrit moi-même le code de départ, ligne par ligne, en suivant le tutor
 - la revue du code et les corrections des notifications, de la persistance, du filtre et de l’accessibilité ;
 - la seconde revue du 9 novembre : contrôles des réponses API, statistiques facultatives, navigation et configuration de vérification GitHub ;
 - l’ajout, à ma demande, du catalogue de secours local, de ses images et du bandeau « Mode démonstration » ;
+- la simplification du code des appels API, des favoris, des listes et des fiches sur une branche dédiée à la préparation de l’oral ;
 - les tests de la revue et la rédaction de ce README.
 
 La répartition personnelle/IA n’a pas été mesurée. Il n’est donc pas possible d’attribuer honnêtement un pourcentage précis à chaque fichier ou domaine. Les tests de cette revue ont été réalisés avec l’assistance de Codex.
