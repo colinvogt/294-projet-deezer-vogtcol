@@ -186,7 +186,7 @@
     }
   }
 
-  watch([() => props.type, itemId, retryCount], async ([type, id], _, onCleanup) => {
+  async function loadDetail ([type, id], _, onCleanup) {
     const controller = new AbortController()
     const { signal } = controller
     onCleanup(() => controller.abort())
@@ -214,13 +214,14 @@
       }
     }
 
-    if (signal.aborted || !association.value) {
-      return
+    if (!signal.aborted && association.value) {
+      await loadRelated(association.value, signal)
     }
+  }
 
+  async function loadRelated ({ type, params }, signal) {
     isRelatedLoading.value = true
     try {
-      const { type, params } = association.value
       const result = await deezerStore.fetchCataloguePage(type, { ...params, page: 1, limit: 12 }, signal)
       if (!signal.aborted) {
         relatedItems.value = result.items
@@ -235,5 +236,7 @@
         isRelatedLoading.value = false
       }
     }
-  }, { immediate: true })
+  }
+
+  watch([() => props.type, itemId, retryCount], loadDetail, { immediate: true })
 </script>

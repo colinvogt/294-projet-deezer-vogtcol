@@ -149,16 +149,21 @@
     if (!isLoading.value) loadPage(pagination.value.page + 1)
   }
 
-  watch([searchQuery, selectedFilter, () => deezerStore.isMock], (values, previousValues) => {
+  function restartCatalogue () {
     clearTimeout(searchTimer)
     request?.abort()
     items.value = []
     pagination.value = { page: 0, pages: 0, total: 0 }
-    // En cas de panne en page 2, reprendre la page 1 du catalogue local sans mélanger les résultats.
-    if (values[2] !== previousValues[2]) filterOptions.value = []
     isLoading.value = true
     error.value = false
     searchTimer = setTimeout(() => loadPage(1), searchDelay)
+  }
+
+  watch([searchQuery, selectedFilter], restartCatalogue, { flush: 'sync' })
+  watch(() => deezerStore.isMock, () => {
+    // Les suggestions et les cartes doivent venir de la même source.
+    filterOptions.value = []
+    restartCatalogue()
   }, { flush: 'sync' })
 
   onMounted(() => loadPage(1))

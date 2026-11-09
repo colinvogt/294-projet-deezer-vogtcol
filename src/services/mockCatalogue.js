@@ -1,5 +1,7 @@
 import mock from '@/data/mock.json'
 
+const filterFields = ['artist', 'genres', 'album', 'name']
+
 // Une panne peut activer le secours, mais pas un clic annulé ni une vraie erreur 404.
 export function shouldUseMock (error, signal) {
   if (signal?.aborted || error.code === 'ERR_CANCELED' || !error.isAxiosError) {
@@ -12,7 +14,10 @@ export function shouldUseMock (error, signal) {
 export function createMockCache () {
   const cache = {}
   for (const [type, items] of Object.entries(mock)) {
-    cache[type] = Object.fromEntries(items.map(item => [item.id, item]))
+    cache[type] = {}
+    for (const item of items) {
+      cache[type][item.id] = item
+    }
   }
   return cache
 }
@@ -26,6 +31,30 @@ export function getMockItem (type, id) {
   return item
 }
 
+function matchesSearch (item, query) {
+  if (!query) {
+    return true
+  }
+  const values = Object.values(item).flat()
+  return values.some(value => typeof value === 'string' && value.toLocaleLowerCase('fr').includes(query))
+}
+
+function matchesFilters (item, params) {
+  for (const field of filterFields) {
+    const filter = params[field]?.trim().toLocaleLowerCase('fr')
+    if (!filter) {
+      continue
+    }
+    // Un artiste peut avoir plusieurs genres. Un seul genre correspondant suffit.
+    const values = [item[field]].flat()
+    const matches = values.some(value => typeof value === 'string' && value.toLocaleLowerCase('fr') === filter)
+    if (!matches) {
+      return false
+    }
+  }
+  return true
+}
+
 export function getMockPage (type, params = {}) {
   const { page = 1, limit = 24, q = '' } = params
   if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(limit) || limit < 1 || limit > 100) {
@@ -33,19 +62,7 @@ export function getMockPage (type, params = {}) {
   }
 
   const query = q.trim().toLocaleLowerCase('fr')
-  const filtered = mock[type].filter(item => {
-    const texts = Object.values(item).flat().filter(value => typeof value === 'string')
-    const matchesSearch = !query || texts.some(value => value.toLocaleLowerCase('fr').includes(query))
-    const matchesFilters = ['artist', 'genres', 'album', 'name'].every(field => {
-      const filter = params[field]?.trim().toLocaleLowerCase('fr')
-      if (!filter) {
-        return true
-      }
-      const values = Array.isArray(item[field]) ? item[field] : [item[field]]
-      return values.some(value => typeof value === 'string' && value.toLocaleLowerCase('fr') === filter)
-    })
-    return matchesSearch && matchesFilters
-  })
+  const filtered = mock[type].filter(item => matchesSearch(item, query) && matchesFilters(item, params))
 
   // Filtrer avant de découper la page permet de garder un compteur exact.
   const start = (page - 1) * limit

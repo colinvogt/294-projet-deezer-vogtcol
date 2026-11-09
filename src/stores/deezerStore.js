@@ -4,6 +4,17 @@ import { createMockCache, getMockItem, getMockPage, shouldUseMock } from '@/serv
 import { useAppStore } from '@/stores/app.js'
 
 const endpoints = { albums: 'albums', artistes: 'artists', tracks: 'tracks' }
+const favoritesKey = 'deezer_favorites'
+
+function emptyFavorites () {
+  return { albums: [], artistes: [], tracks: [] }
+}
+
+function favoriteItems (state, type) {
+  return state.favorites[type]
+    .map(id => state.itemsById[type][id])
+    .filter(item => item !== undefined)
+}
 
 function normalizeIds (ids) {
   if (!Array.isArray(ids)) {
@@ -27,11 +38,7 @@ const useDeezerStore = defineStore('deezer', {
     isMock: false,
     // Favoris : on ne garde que les IDs, rangés par type
     // (un album, un artiste et un titre peuvent avoir le même ID)
-    favorites: {
-      albums: [],
-      artistes: [],
-      tracks: [],
-    },
+    favorites: emptyFavorites(),
   }),
 
   getters: {
@@ -52,33 +59,12 @@ const useDeezerStore = defineStore('deezer', {
 
     // Vérifie si un élément est favori
     // type = 'albums', 'artistes' ou 'tracks'
-    isFavorite: state => {
-      return (type, item) => {
-        return state.favorites[type].some(id => String(id) === String(item.id))
-      }
-    },
+    isFavorite: state => (type, item) => state.favorites[type].includes(Number(item.id)),
 
     // Retourne les objets complets (pas juste les IDs)
-    getFavoriteAlbums () {
-      const favoriteAlbums = this.favorites.albums.map(favoriteId => {
-        return this.getItemById('albums', favoriteId)
-      })
-      return favoriteAlbums.filter(album => album !== undefined)
-    },
-
-    getFavoriteArtistes () {
-      const favoriteArtistes = this.favorites.artistes.map(favoriteId => {
-        return this.getItemById('artistes', favoriteId)
-      })
-      return favoriteArtistes.filter(artiste => artiste !== undefined)
-    },
-
-    getFavoriteTracks () {
-      const favoriteTracks = this.favorites.tracks.map(favoriteId => {
-        return this.getItemById('tracks', favoriteId)
-      })
-      return favoriteTracks.filter(track => track !== undefined)
-    },
+    getFavoriteAlbums: state => favoriteItems(state, 'albums'),
+    getFavoriteArtistes: state => favoriteItems(state, 'artistes'),
+    getFavoriteTracks: state => favoriteItems(state, 'tracks'),
   },
 
   actions: {
@@ -92,24 +78,25 @@ const useDeezerStore = defineStore('deezer', {
       this.isMock = true
     },
 
-    async fetchCataloguePage (type, params, signal) {
-      let data
-      if (!this.isMock) {
-        try {
-          const response = await api.get(`/${endpoints[type]}`, { params, signal, timeout: 10_000 })
-          data = response.data
-        } catch (error) {
-          if (!shouldUseMock(error, signal)) {
-            throw error
-          }
-          this.activateMock()
-        }
-      }
-      // Une autre requête peut avoir activé le mock pendant notre attente.
+    async requestApi (path, options) {
       if (this.isMock) {
-        data = getMockPage(type, params)
+        return
       }
+      try {
+        const response = await api.get(path, { ...options, timeout: 10_000 })
+        return response.data
+      } catch (error) {
+        if (!shouldUseMock(error, options.signal)) {
+          throw error
+        }
+        this.activateMock()
+      }
+    },
 
+    async fetchCataloguePage (type, params, signal) {
+      const apiData = await this.requestApi(`/${endpoints[type]}`, { params, signal })
+      // Vérifier la source après l'attente : une autre requête a pu activer le mock.
+      const data = this.isMock ? getMockPage(type, params) : apiData
       const { data: items, pagination } = data ?? {}
       // Vérifier toute la réponse avant de modifier le cache partagé.
       const validItems = Array.isArray(items)
@@ -141,22 +128,8 @@ const useDeezerStore = defineStore('deezer', {
         return cachedItem
       }
 
-      let data
-      if (!this.isMock) {
-        try {
-          const response = await api.get(`/${endpoints[type]}/${numericId}`, { signal, timeout: 10_000 })
-          data = response.data
-        } catch (error) {
-          if (!shouldUseMock(error, signal)) {
-            throw error
-          }
-          this.activateMock()
-        }
-      }
-      if (this.isMock) {
-        data = getMockItem(type, numericId)
-      }
-
+      const apiData = await this.requestApi(`/${endpoints[type]}/${numericId}`, { signal })
+      const data = this.isMock ? getMockItem(type, numericId) : apiData
       if (data?.id !== numericId) {
         throw new Error('Réponse inattendue lors du chargement de cet élément.')
       }
@@ -175,22 +148,18 @@ const useDeezerStore = defineStore('deezer', {
     // Charge les favoris depuis le localStorage
     loadFavorites () {
       try {
-        const savedFavorites = localStorage.getItem('deezer_favorites')
-        if (savedFavorites) {
-          const data = JSON.parse(savedFavorites)
-          if (!data || typeof data !== 'object' || Array.isArray(data)) {
-            throw new Error('Format des favoris invalide.')
-          }
-          this.favorites = {
-            albums: normalizeIds(data.albums),
-            artistes: normalizeIds(data.artistes),
-            tracks: normalizeIds(data.tracks),
-          }
-        } else {
-          this.favorites = { albums: [], artistes: [], tracks: [] }
+        const savedFavorites = localStorage.getItem(favoritesKey)
+        const data = JSON.parse(savedFavorites || '{}')
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+          throw new Error('Format des favoris invalide.')
+        }
+        this.favorites = {
+          albums: normalizeIds(data.albums),
+          artistes: normalizeIds(data.artistes),
+          tracks: normalizeIds(data.tracks),
         }
       } catch {
-        this.favorites = { albums: [], artistes: [], tracks: [] }
+        this.favorites = emptyFavorites()
         useAppStore().notify('Impossible de lire les favoris enregistrés dans ce navigateur.', 'warning')
       }
     },
@@ -198,7 +167,7 @@ const useDeezerStore = defineStore('deezer', {
     // Sauvegarde les favoris dans le localStorage
     saveFavorites (message) {
       try {
-        localStorage.setItem('deezer_favorites', JSON.stringify(this.favorites))
+        localStorage.setItem(favoritesKey, JSON.stringify(this.favorites))
         useAppStore().notify(message)
       } catch {
         useAppStore().notify('Favoris modifiés pour cette session, mais la sauvegarde dans le navigateur a échoué.', 'warning')
@@ -208,24 +177,19 @@ const useDeezerStore = defineStore('deezer', {
     // Ajoute ou retire un favori
     // type = 'albums', 'artistes' ou 'tracks'
     toggleFavorite (type, item) {
-      const favoriteIndex = this.favorites[type].findIndex(id => String(id) === String(item.id))
-
-      if (favoriteIndex === -1) {
-        // Pas encore favori → on l'ajoute
-        this.favorites[type].push(item.id)
-        this.itemsById[type][item.id] = item
-      } else {
-        // Déjà favori → on le retire
-        this.favorites[type].splice(favoriteIndex, 1)
+      const id = Number(item.id)
+      if (this.isFavorite(type, item)) {
+        this.removeFavorite(type, id)
+        return
       }
-
-      // Sauvegarder après chaque changement
-      this.saveFavorites(favoriteIndex === -1 ? 'Ajouté aux favoris' : 'Retiré des favoris')
+      this.favorites[type].push(id)
+      this.itemsById[type][id] = item
+      this.saveFavorites('Ajouté aux favoris')
     },
 
     // Permet aussi de retirer un favori qui ne peut plus être chargé depuis l'API.
     removeFavorite (type, id) {
-      this.favorites[type] = this.favorites[type].filter(favoriteId => String(favoriteId) !== String(id))
+      this.favorites[type] = this.favorites[type].filter(favoriteId => favoriteId !== Number(id))
       this.saveFavorites('Retiré des favoris')
     },
   },
