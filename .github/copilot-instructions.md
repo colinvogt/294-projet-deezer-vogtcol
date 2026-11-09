@@ -18,7 +18,7 @@ Lire le README à la racine pour l’installation, l’architecture et les limit
 - `app.js` gère la notification affichée dans `App.vue`, qui survit au retrait d’une carte.
 - Respecter la limite API de 100 éléments par requête. Les listes utilisent actuellement 24 éléments par page.
 - `.env.example` est le modèle public ; ne pas commiter `.env` ni des secrets.
-- Le site utilisé est publié sur Vercel. Le workflow GitHub Pages hérité n’est pas une procédure validée pour ce projet.
+- Le site utilisé est publié sur Vercel. Le fichier `.github/workflows/deploy.yml` vérifie seulement ESLint et le build avec Node.js 22 ; il ne déploie pas sur GitHub Pages.
 
 ## Vérification et historique
 

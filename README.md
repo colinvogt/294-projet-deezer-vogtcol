@@ -45,6 +45,19 @@ Le projet s’appuie sur le tutoriel [Pokédex Vuetify de DEVJS](https://devjs.c
 | 4 — Recherche, filtre et tri | Champs réactifs, événements, tableaux et `computed` | Recherche et filtre dans l’API, tri local dans un `computed` |
 | 5 — Favoris | Identifiants, localStorage, clic sur le cœur et feedback | Favoris persistants, page dédiée, compteur et notification |
 
+### Progression retrouvée dans l’historique Git
+
+| Période | Travail enregistré |
+| --- | --- |
+| 22–29 septembre 2026 | Initialisation, en-tête et pied de page |
+| 16 octobre | Premiers albums depuis l’API, store, cartes et fiche d’album |
+| 24 octobre | Axios, états de chargement/erreur, artistes, titres et navigation |
+| 2–4 novembre | Recherche, filtres, tri, favoris persistants, pagination, accueil et adaptation mobile |
+| 5 novembre | Corrections des favoris, des filtres, de l’accessibilité et rédaction du README |
+| 9 novembre | Validation des réponses API, statistiques facultatives, défilement des fiches et vérification GitHub |
+
+Ces dates décrivent les commits existants, sans reconstituer artificiellement une progression hebdomadaire.
+
 La recherche et les filtres sont adaptés à la pagination de cette API : ils sont envoyés au serveur pour rechercher aussi les éléments qui ne sont pas encore affichés. Le tri utilise une copie du tableau chargé, sans modifier les données du store. Les états de chargement restent propres à chaque page, tandis que les appels et les objets récupérés sont centralisés dans Pinia.
 
 Les coups de cœur, les informations des fiches et le menu compact sont des adaptations personnelles déjà présentes. Il n’y a pas de formulaire de création dans l’API, d’authentification, de suppression sur le serveur, de PWA ou d’application native.
@@ -81,7 +94,7 @@ La copie de `.env.example` est nécessaire à la première installation. Si un `
 VITE_API_URL=https://apis.divtec.me/api/deezer
 ```
 
-Redémarrer le serveur Vite après une modification de cette variable. `.env` est prévu pour rester local et figure dans `.gitignore` ; `.env.example` contient le modèle public à partager. Un fichier déjà préparé pour commit reste toutefois suivi par Git : voir la note sur les modifications préexistantes dans le rapport de revue. Les variables préfixées `VITE_` sont visibles dans le code envoyé au navigateur et ne doivent pas contenir de secret.
+Redémarrer le serveur Vite après une modification de cette variable. `.env` reste local et figure dans `.gitignore` ; `.env.example` contient le modèle public à partager. Les variables préfixées `VITE_` sont visibles dans le code envoyé au navigateur et ne doivent pas contenir de secret.
 
 ### Commandes utiles
 
@@ -105,7 +118,7 @@ URL de base : `https://apis.divtec.me/api/deezer`.
 | `GET /artists` et `GET /artists/:id` | Liste et fiche d’artiste |
 | `GET /tracks` et `GET /tracks/:id` | Liste et fiche de titre |
 
-Les listes renvoient `{ data, pagination }`. Les fiches renvoient directement un objet. Les appels sont limités à dix secondes avant de signaler un échec.
+Les listes renvoient `{ data, pagination }`. Les fiches renvoient directement un objet. Les appels sont limités à dix secondes avant de signaler un échec. Le store vérifie les identifiants et les nombres de pagination avant de mettre une liste en cache ; une réponse invalide affiche l’état d’erreur. Les statistiques facultatives d’un artiste ne sont affichées que si elles sont numériques, sans confondre zéro et une donnée absente.
 
 - `limit` est limité à **100 par requête**, pas à 100 éléments pour toute l’application.
 - Le catalogue demande `limit=24`, puis augmente `page` lorsque l’on clique sur « Charger la suite ».
@@ -170,7 +183,7 @@ Les changements sont regroupés par objectif dans des commits `feat:`, `fix:` ou
 
 Le projet est déjà publié à l’adresse indiquée en début de document. Pour reconstruire cette application sur Vercel, la configuration attendue est Vite, avec `npm run build`, le dossier de sortie `dist` et la variable `VITE_API_URL` définie lors du build. Le fichier `vercel.json` renvoie les routes vers `index.html`, ce qui permet d’ouvrir directement une fiche ou de la recharger.
 
-Le workflow GitHub Pages présent dans `.github/workflows/deploy.yml` est hérité du modèle. Il n’est pas la procédure Vercel et sa configuration n’est pas validée pour publier cette application sur GitHub Pages. Ses limites sont relevées dans le rapport de revue.
+Le fichier `.github/workflows/deploy.yml` conserve son nom hérité du modèle, mais son rôle est maintenant de vérifier le projet. À chaque push ou pull request vers `main`, il utilise Node.js 22, installe avec `npm ci`, copie le modèle public `.env.example`, lance ESLint sans correction automatique puis compile l’application. Il ne publie plus sur GitHub Pages. La publication reste gérée séparément par Vercel.
 
 ## 4. Tests et validation
 
@@ -200,6 +213,16 @@ Vérifications réalisées pendant la revue du 5 novembre 2026, sur une copie lo
 Douze vérifications isolées supplémentaires ont été exécutées pendant la revue avec les vrais stores Pinia et des réponses API/stockage simulées en mémoire. Elles couvrent notamment les identifiants en double, le JSON invalide, les refus de stockage, les favoris indisponibles, la persistance et les paramètres de pagination. Ce script de revue temporaire n’est pas une suite de tests livrée dans le dépôt.
 
 Le site Vercel existant a été consulté séparément : l’accueil et le rechargement de la fiche Deadbeat fonctionnaient. Cela ne signifie pas que les corrections locales de cette revue sont déjà déployées.
+
+### Vérification complémentaire du 9 novembre 2026
+
+Les consignes et le barème ont été relus en conservant le périmètre des séquences 1 à 5. La compilation et ESLint sans modification automatique réussissent sur une copie du code corrigé. Dix-huit tests isolés passent avec les vrais stores, un rendu Vue de la carte artiste et des réponses API/stockage simulées. Cinq tests ont d’abord reproduit les défauts corrigés : statistiques absentes, pagination incomplète, identifiants de liste invalides et deux erreurs du routeur lorsque le stockage est refusé.
+
+La version compilée a été testée dans le navigateur : neuf coups de cœur, pagination de 24 à 48 albums, recherche vide, filtre Tame Impala, inversion du tri, filtre de genre Rock, recherche Dark Red, navigation titre → artiste → album et rechargement direct. L’ajout d’un favori avec Entrée n’ouvre pas la fiche ; le favori survit au rechargement et sa suppression affiche une confirmation. Le menu reste accessible à 320 pixels. Les adresses invalides montrent un message adapté. Aucune erreur ni avertissement de console n’a été observé sur ces parcours normaux.
+
+Un serveur de test séparé avec une API volontairement inaccessible confirme les alertes et le bouton Réessayer sur la liste et sur la fiche. L’ouverture d’une fiche depuis le bas d’une liste a aussi été vérifiée après correction : elle commence en haut, avec Retour visible. Les scripts de test restent hors du dépôt ; ils n’ajoutent aucune dépendance au projet.
+
+Le workflow GitHub a été contrôlé syntaxiquement et ses commandes de vérification ont été exécutées localement avec Node.js 26.12.1. Son exécution sur GitHub avec Node.js 22 et la publication Vercel ne sont pas couvertes par ces essais locaux. Les commits de cette revue n’ont pas été poussés ni déployés par l’assistant.
 
 ### Scénario de démonstration
 
@@ -236,6 +259,7 @@ J’ai écrit moi-même le code de départ, ligne par ligne, en suivant le tutor
 - le chargement des favoris par identifiant ;
 - la sélection de l’accueil, le menu compact et les fiches détaillées ;
 - la revue du code et les corrections des notifications, de la persistance, du filtre et de l’accessibilité ;
+- la seconde revue du 9 novembre : contrôles des réponses API, statistiques facultatives, navigation et configuration de vérification GitHub ;
 - les tests de la revue et la rédaction de ce README.
 
 La répartition personnelle/IA n’a pas été mesurée. Il n’est donc pas possible d’attribuer honnêtement un pourcentage précis à chaque fichier ou domaine. Les tests de cette revue ont été réalisés avec l’assistance de Codex.
