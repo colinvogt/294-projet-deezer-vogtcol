@@ -62,12 +62,14 @@ export function getMockPage (type, params = {}) {
   }
 
   const query = q.trim().toLocaleLowerCase('fr')
-  const filtered = mock[type].filter(item => matchesSearch(item, query) && matchesFilters(item, params))
+  const filteredByField = mock[type].filter(item => matchesFilters(item, params))
+  const filteredBySearch = filteredByField.filter(item => matchesSearch(item, query))
 
   // Filtrer avant de découper la page permet de garder un compteur exact.
   const start = (page - 1) * limit
+  const total = filteredBySearch.length
   return {
-    data: filtered.slice(start, start + limit),
-    pagination: { page, limit, total: filtered.length, pages: Math.ceil(filtered.length / limit) },
+    data: filteredBySearch.slice(start, start + limit),
+    pagination: { page, limit, total, pages: Math.ceil(total / limit) },
   }
 }

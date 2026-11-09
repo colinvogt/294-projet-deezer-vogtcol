@@ -178,13 +178,17 @@ const useDeezerStore = defineStore('deezer', {
     // type = 'albums', 'artistes' ou 'tracks'
     toggleFavorite (type, item) {
       const id = Number(item.id)
-      if (this.isFavorite(type, item)) {
-        this.removeFavorite(type, id)
-        return
+      const favorites = this.favorites[type]
+      const index = favorites.indexOf(id)
+
+      if (index === -1) {
+        favorites.push(id)
+        this.itemsById[type][id] = item
+        this.saveFavorites('Ajouté aux favoris')
+      } else {
+        favorites.splice(index, 1)
+        this.saveFavorites('Retiré des favoris')
       }
-      this.favorites[type].push(id)
-      this.itemsById[type][id] = item
-      this.saveFavorites('Ajouté aux favoris')
     },
 
     // Permet aussi de retirer un favori qui ne peut plus être chargé depuis l'API.

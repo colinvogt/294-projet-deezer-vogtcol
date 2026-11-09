@@ -5,17 +5,47 @@
       <span aria-live="polite" class="text-subtitle-1">({{ items.length }} / {{ pagination.total }})</span>
     </h1>
 
-    <barre-recherche
-      :filter="selectedFilter"
-      :filter-label="filterLabel"
-      :items="filterOptions"
-      :search="searchQuery"
-      :search-label="searchLabel"
-      :sort-order="sortOrder"
-      @change-filter="selectedFilter = $event"
-      @change-search="searchQuery = $event ?? ''"
-      @toggle-sort="toggleSort"
-    />
+    <v-row class="mb-4">
+      <v-col cols="12" md="4" sm="6">
+        <v-text-field
+          v-model="searchQuery"
+          clearable
+          density="compact"
+          hide-details
+          :label="searchLabel"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="12" md="4" sm="6">
+        <v-combobox
+          v-model="selectedFilter"
+          clearable
+          density="compact"
+          hint="Choisissez une suggestion ou saisissez une valeur puis Entrée."
+          :items="filterOptions"
+          :label="filterLabel"
+          persistent-hint
+          prepend-inner-icon="mdi-filter"
+          :return-object="false"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col class="d-flex align-start" cols="12" md="4">
+        <v-btn
+          height="40"
+          :prepend-icon="sortOrder === 'asc'
+            ? 'mdi-sort-alphabetical-ascending'
+            : 'mdi-sort-alphabetical-descending'"
+          variant="outlined"
+          @click="toggleSort"
+        >
+          Tri {{ sortOrder === 'asc' ? 'A → Z' : 'Z → A' }} (affichés)
+        </v-btn>
+      </v-col>
+    </v-row>
 
     <v-row v-if="isLoading && items.length === 0" aria-label="Chargement du catalogue">
       <v-col
@@ -63,7 +93,6 @@
 </template>
 
 <script setup>
-  import BarreRecherche from '@/components/BarreRecherche.vue'
   import useDeezerStore from '@/stores/deezerStore.js'
 
   const props = defineProps({
@@ -125,12 +154,18 @@
       const result = await deezerStore.fetchCataloguePage(props.type, params, controller.signal)
       if (controller.signal.aborted) return
 
-      const uniqueItems = new Map(items.value.map(item => [item.id, item]))
+      // Si une page renvoie un ID déjà affiché, mettre à jour sa carte.
+      const updatedItems = [...items.value]
       for (const item of result.items) {
-        uniqueItems.set(item.id, item)
+        const index = updatedItems.findIndex(current => current.id === item.id)
+        if (index === -1) {
+          updatedItems.push(item)
+        } else {
+          updatedItems[index] = item
+        }
       }
 
-      items.value = [...uniqueItems.values()]
+      items.value = updatedItems
       pagination.value = result.pagination
 
       // Les choix restent disponibles lorsque la recherche renvoie moins de résultats.
