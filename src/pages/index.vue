@@ -41,7 +41,9 @@
             md="4"
             sm="6"
           >
-            <component :is="section.card" v-bind="{ [section.cardProp]: item }" />
+            <album-card v-if="section.type === 'albums'" :album="item" />
+            <artiste-card v-else-if="section.type === 'artistes'" :artiste="item" />
+            <titre-card v-else :track="item" />
           </v-col>
         </v-row>
       </section>
@@ -57,27 +59,9 @@
 
   // La sélection de l'accueil est définie par les ID du catalogue.
   const selection = [
-    {
-      type: 'albums',
-      title: 'Albums',
-      ids: [330, 329, 403],
-      card: AlbumCard,
-      cardProp: 'album',
-    },
-    {
-      type: 'artistes',
-      title: 'Artistes',
-      ids: [206, 169, 203],
-      card: ArtisteCard,
-      cardProp: 'artiste',
-    },
-    {
-      type: 'tracks',
-      title: 'Titres',
-      ids: [548, 1316, 683],
-      card: TitreCard,
-      cardProp: 'track',
-    },
+    { type: 'albums', title: 'Albums', ids: [330, 329, 403] },
+    { type: 'artistes', title: 'Artistes', ids: [206, 169, 203] },
+    { type: 'tracks', title: 'Titres', ids: [548, 1316, 683] },
   ]
 
   const deezerStore = useDeezerStore()

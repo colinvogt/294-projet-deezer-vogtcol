@@ -1,5 +1,5 @@
 <template>
-  <fiche-catalogue type="tracks" />
+  <fiche-catalogue :key="$route.params.id" type="tracks" />
 </template>
 
 <script setup>

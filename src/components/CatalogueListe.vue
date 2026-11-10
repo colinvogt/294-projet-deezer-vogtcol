@@ -5,17 +5,47 @@
       <span aria-live="polite" class="text-subtitle-1">({{ items.length }} / {{ pagination.total }})</span>
     </h1>
 
-    <barre-recherche
-      :filter="selectedFilter"
-      :filter-label="filterLabel"
-      :items="filterOptions"
-      :search="searchQuery"
-      :search-label="searchLabel"
-      :sort-order="sortOrder"
-      @change-filter="selectedFilter = $event"
-      @change-search="searchQuery = $event ?? ''"
-      @toggle-sort="toggleSort"
-    />
+    <v-row class="mb-4">
+      <v-col cols="12" md="4" sm="6">
+        <v-text-field
+          v-model="searchQuery"
+          clearable
+          density="compact"
+          hide-details
+          :label="searchLabel"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col cols="12" md="4" sm="6">
+        <v-combobox
+          v-model="selectedFilter"
+          clearable
+          density="compact"
+          hint="Choisissez une suggestion ou saisissez une valeur puis Entrée."
+          :items="filterOptions"
+          :label="filterLabel"
+          persistent-hint
+          prepend-inner-icon="mdi-filter"
+          :return-object="false"
+          variant="outlined"
+        />
+      </v-col>
+
+      <v-col class="d-flex align-start" cols="12" md="4">
+        <v-btn
+          height="40"
+          :prepend-icon="sortOrder === 'asc'
+            ? 'mdi-sort-alphabetical-ascending'
+            : 'mdi-sort-alphabetical-descending'"
+          variant="outlined"
+          @click="toggleSort"
+        >
+          Tri {{ sortOrder === 'asc' ? 'A → Z' : 'Z → A' }} (affichés)
+        </v-btn>
+      </v-col>
+    </v-row>
 
     <v-row v-if="isLoading && items.length === 0" aria-label="Chargement du catalogue">
       <v-col
@@ -63,7 +93,6 @@
 </template>
 
 <script setup>
-  import BarreRecherche from '@/components/BarreRecherche.vue'
   import useDeezerStore from '@/stores/deezerStore.js'
 
   const props = defineProps({
@@ -71,16 +100,16 @@
     filterField: { type: String, required: true },
     filterLabel: { type: String, required: true },
     searchLabel: { type: String, required: true },
-    sortField: { type: String, required: true },
     title: { type: String, required: true },
     type: { type: String, required: true },
   })
 
   const pageSize = 24
   const searchDelay = 300
+  const emptyPagination = { page: 0, pages: 0, total: 0 }
   const deezerStore = useDeezerStore()
   const items = ref([])
-  const pagination = ref({ page: 0, pages: 0, total: 0 })
+  const pagination = ref(emptyPagination)
   const filterOptions = ref([])
   const searchQuery = ref('')
   const selectedFilter = ref(null)
@@ -88,7 +117,7 @@
   const isLoading = ref(true)
   const error = ref(false)
 
-  let request
+  let controller = new AbortController()
   let searchTimer
 
   const hasMore = computed(() => pagination.value.page < pagination.value.pages)
@@ -96,8 +125,8 @@
   const sortedItems = computed(() => {
     const sorted = [...items.value]
     sorted.sort((a, b) => {
-      const nameA = a[props.sortField] ?? ''
-      const nameB = b[props.sortField] ?? ''
+      const nameA = a.title ?? a.name ?? ''
+      const nameB = b.title ?? b.name ?? ''
       const comparison = nameA.localeCompare(nameB, 'fr')
       return sortOrder.value === 'asc' ? comparison : -comparison
     })
@@ -108,62 +137,71 @@
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
   }
 
-  async function loadPage (page) {
-    const controller = new AbortController()
-    request = controller
+  async function loadPage () {
+    const { signal } = controller
+    const nextPage = pagination.value.page + 1
     isLoading.value = true
     error.value = false
 
     const params = {
-      page,
+      page: nextPage,
       limit: pageSize,
       q: searchQuery.value?.trim() || undefined,
       [props.filterField]: selectedFilter.value?.trim() || undefined,
     }
 
     try {
-      const result = await deezerStore.fetchCataloguePage(props.type, params, controller.signal)
-      if (controller.signal.aborted) return
+      const { items: newItems, pagination: newPagination } = await deezerStore.fetchCataloguePage(
+        props.type, params, signal,
+      )
+      if (signal.aborted) return
 
-      const uniqueItems = new Map(items.value.map(item => [item.id, item]))
-      for (const item of result.items) {
-        uniqueItems.set(item.id, item)
+      // Ajouter les nouvelles cartes et remplacer celles dont l'ID est déjà affiché.
+      for (const item of newItems) {
+        const index = items.value.findIndex(current => current.id === item.id)
+        if (index === -1) {
+          items.value.push(item)
+        } else {
+          items.value[index] = item
+        }
       }
 
-      items.value = [...uniqueItems.values()]
-      pagination.value = result.pagination
+      // On avance seulement après une réponse réussie : Réessayer redemande la même page.
+      pagination.value = newPagination
 
       // Les choix restent disponibles lorsque la recherche renvoie moins de résultats.
-      const newOptions = result.items.flatMap(item => item[props.filterField] ?? [])
+      const newOptions = newItems.flatMap(item => item[props.filterField] ?? [])
       const options = [...new Set([...filterOptions.value, ...newOptions.filter(Boolean)])]
       options.sort((a, b) => a.localeCompare(b, 'fr'))
       filterOptions.value = options
     } catch {
-      if (!controller.signal.aborted) error.value = true
+      if (!signal.aborted) error.value = true
     } finally {
-      if (!controller.signal.aborted) isLoading.value = false
+      if (!signal.aborted) isLoading.value = false
     }
   }
 
   function loadNextPage () {
-    if (!isLoading.value) loadPage(pagination.value.page + 1)
+    if (!isLoading.value) loadPage()
   }
 
-  watch([searchQuery, selectedFilter, () => deezerStore.isMock], (values, previousValues) => {
+  function restartCatalogue () {
     clearTimeout(searchTimer)
-    request?.abort()
+    // Une nouvelle recherche annule les requêtes de la précédente.
+    controller.abort()
+    controller = new AbortController()
     items.value = []
-    pagination.value = { page: 0, pages: 0, total: 0 }
-    // En cas de panne en page 2, reprendre la page 1 du catalogue local sans mélanger les résultats.
-    if (values[2] !== previousValues[2]) filterOptions.value = []
+    pagination.value = emptyPagination
     isLoading.value = true
     error.value = false
-    searchTimer = setTimeout(() => loadPage(1), searchDelay)
-  }, { flush: 'sync' })
+    searchTimer = setTimeout(loadPage, searchDelay)
+  }
 
-  onMounted(() => loadPage(1))
+  watch([searchQuery, selectedFilter], restartCatalogue, { flush: 'sync' })
+
+  onMounted(loadPage)
   onBeforeUnmount(() => {
     clearTimeout(searchTimer)
-    request?.abort()
+    controller.abort()
   })
 </script>

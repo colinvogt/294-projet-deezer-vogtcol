@@ -1,5 +1,5 @@
 <template>
-  <fiche-catalogue type="artistes" />
+  <fiche-catalogue :key="$route.params.id" type="artistes" />
 </template>
 
 <script setup>

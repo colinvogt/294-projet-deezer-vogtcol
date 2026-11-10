@@ -1,349 +1,201 @@
-# Vogtunes — Catalogue musical Vue 3 & Vuetify
+# 🌐 Vogtunes — Mon projet Vue.js & Vuetify
 
 Projet individuel de Colin Vogt pour le module 294, année 2026–2027.
 
-- [Application publiée sur Vercel](https://294-projet-deezer-vogtcol.vercel.app/)
-- [Dépôt GitHub](https://github.com/colinvogt/294-projet-deezer-vogtcol)
-- [Documentation de l’API pédagogique Deezer](https://apis.divtec.me/api/deezer/docs)
+- [Application en ligne sur Vercel](https://294-projet-deezer-vogtcol.vercel.app/)
+- [Code source sur la branche simplification-oral](https://github.com/colinvogt/294-projet-deezer-vogtcol/tree/simplification-oral)
 
-## 1. Présentation du projet
+## 1. 🎨 Présentation du projet
 
 ### Concept
 
-Vogtunes permet de découvrir des albums, des artistes et des titres, de consulter leurs informations et de conserver ses favoris. Le projet s’adresse aux personnes qui veulent explorer un catalogue musical et retrouver leurs préférences.
+Vogtunes s’adresse aux personnes qui veulent découvrir des albums, des artistes et des titres, puis retrouver leurs préférés. J’ai choisi l’API pédagogique Deezer de la DIVTEC parce que la musique m’intéresse et que cette API propose des données liées entre elles, avec des pochettes et des photos. Elle fournit un catalogue pédagogique accessible sans clé API.
 
-L’application utilise l’API pédagogique Deezer hébergée par la DIVTEC. Ce choix permet de travailler sur la musique, avec des images et plusieurs catégories de données liées. Il s’agit d’un catalogue fourni pour l’apprentissage, et non de l’ensemble du service Deezer. Les appels utilisés sont publics et ne demandent pas de clé API.
+### Fonctionnalités principales
 
-### Fonctionnalités
+- Découvrir neuf coups de cœur sur l’accueil et parcourir les trois catalogues par pages de 24 résultats.
+- Rechercher dans le catalogue, filtrer par artiste ou par genre et trier les résultats affichés de A à Z ou de Z à A.
+- Ouvrir la fiche d’un album, d’un artiste ou d’un titre et consulter un aperçu des éléments associés.
+- Ajouter ou retirer un favori et voir une confirmation.
+- Retrouver ses favoris dans le même navigateur après rechargement.
+- Utiliser le menu avec des icônes sur petit écran.
 
-- Accueil avec une sélection fixe de neuf coups de cœur, indépendante des favoris personnels.
-- Catalogues d’albums, d’artistes et de titres, chargés par pages de 24 éléments.
-- Recherche dans l’API, filtre par artiste ou par genre et tri alphabétique des résultats affichés.
-- Fiches détaillées avec les informations disponibles dans l’API et un aperçu des éléments associés.
-- Ajout et retrait de favoris dans les trois catégories, avec confirmation visuelle.
-- Conservation des identifiants favoris dans le navigateur après rechargement.
-- Gestion des chargements, des erreurs réseau, des résultats vides et des pages introuvables.
-- Catalogue de démonstration local avec images lorsque l’API est indisponible.
-- Menu avec icônes seules sur petit écran et cartes adaptées à la largeur disponible.
+### Aperçu visuel
 
-### Aperçu
+![Accueil de Vogtunes avec les coups de cœur](docs/images/accueil.jpg)
 
-Capture de la version locale vérifiée pendant la revue du 5 novembre 2026.
+[Voir la page Favoris avec la confirmation de retrait](docs/images/favoris.jpg)
 
-![Accueil de Vogtunes avec albums, artistes et titres](docs/images/accueil.jpg)
+---
 
-[Voir la confirmation de retrait sur la page des favoris](docs/images/favoris.jpg).
+## 2. 📚 Parcours d’apprentissage
 
-## 2. Parcours d’apprentissage
+### Ressources utilisées
 
-Le projet s’appuie sur le tutoriel [Pokédex Vuetify de DEVJS](https://devjs.ch/exercices/pokedex-vuetify/), adapté au domaine musical. Le périmètre étudié s’arrête à la **séquence 5**, dont l’étape 17 est le récapitulatif.
+#### Documentation & tutos
 
-| Séquence | Notions travaillées | Application dans Vogtunes |
-| --- | --- | --- |
-| 1 — Composants et navigation | Props, slots, pages, routes dynamiques | Cartes réutilisables, menu, listes et fiches |
-| 2 — Pinia | State, getters et actions | Cache des éléments et favoris partagés |
-| 3 — Axios et configuration | Requêtes HTTP, `.env`, chargement et erreurs | Client Axios commun et alertes avec nouvelle tentative |
-| 4 — Recherche, filtre et tri | Champs réactifs, événements, tableaux et `computed` | Recherche et filtre dans l’API, tri local dans un `computed` |
-| 5 — Favoris | Identifiants, localStorage, clic sur le cœur et feedback | Favoris persistants, page dédiée, compteur et notification |
+- [Pokédex Vuetify de DEVJS](https://devjs.ch/exercices/pokedex-vuetify/), suivi jusqu’à la séquence 5. L’étape 16 porte sur l’interface des favoris et l’étape 17 récapitule cette séquence.
+- [Documentation Vue 3](https://vuejs.org/guide/introduction.html), [Vuetify 3](https://vuetifyjs.com/en/components/all/) et [Pinia](https://pinia.vuejs.org/).
+- [Documentation de l’API pédagogique Deezer](https://apis.divtec.me/api/deezer/docs).
 
-### Progression retrouvée dans l’historique Git
+#### Progression
 
-| Période | Travail enregistré |
+Les dates ci-dessous viennent de l’historique Git.
+
+| Période | Travail réalisé |
 | --- | --- |
-| 22–29 septembre 2026 | Initialisation, en-tête et pied de page |
-| 16 octobre | Premiers albums depuis l’API, store, cartes et fiche d’album |
-| 24 octobre | Axios, états de chargement/erreur, artistes, titres et navigation |
-| 2–4 novembre | Recherche, filtres, tri, favoris persistants, pagination, accueil et adaptation mobile |
-| 5 novembre | Corrections des favoris, des filtres, de l’accessibilité et rédaction du README |
-| 9 novembre | Validation des réponses API, statistiques facultatives, défilement des fiches, vérification GitHub et ajout du catalogue de secours |
+| 22–29 septembre 2026 | Initialisation, en-tête et pied de page. |
+| 16 octobre | Premiers albums chargés depuis l’API, store, cartes et fiche d’album. |
+| 24 octobre | Axios, états de chargement et d’erreur, catalogues d’artistes et de titres, navigation. |
+| 2–4 novembre | Recherche, filtres, tri, pagination, favoris persistants, accueil et menu mobile. |
+| 5–9 novembre | Corrections des favoris, de l’accessibilité et de la validation des données, puis rédaction du README. |
+| 10 novembre | Simplification des fiches, des listes et de la pagination pour la défense orale. |
 
-Ces dates décrivent les commits existants, sans reconstituer artificiellement une progression hebdomadaire.
+---
 
-La recherche et les filtres sont adaptés à la pagination de cette API : ils sont envoyés au serveur pour rechercher aussi les éléments qui ne sont pas encore affichés. Le tri utilise une copie du tableau chargé, sans modifier les données du store. Les états de chargement restent propres à chaque page, tandis que les appels et les objets récupérés sont centralisés dans Pinia.
+## 3. 🛠️ Outils et méthodologie
 
-Les coups de cœur, les informations des fiches et le menu compact sont des adaptations personnelles déjà présentes. Il n’y a pas de formulaire de création dans l’API, d’authentification, de suppression sur le serveur, de PWA ou d’application native.
+### Environnement de développement
 
-## 3. Outils et méthodologie
+- WebStorm pour développer, Git et GitHub pour suivre les changements.
+- JavaScript, Vue 3, Vuetify 3, Vue Router, Pinia, Axios et Vite.
+- Node.js 22 ou une version plus récente compatible.
+- `.env.example` contient l’adresse publique de l’API. Le fichier `.env` reste local et est ignoré par Git.
 
-### Environnement
+### Installation & Run
 
-- WebStorm pour le développement.
-- JavaScript avec Vue 3, Vuetify 3, Vue Router, Pinia et Axios.
-- Vite pour le serveur de développement et la compilation.
-- Git et GitHub pour l’historique, Vercel pour le site publié.
-- Node.js 22 ou version plus récente compatible. La revue a été exécutée avec Node.js 26.12.1 et npm 11.20.0.
-
-Les versions exactes des dépendances sont enregistrées dans `package-lock.json`. Node.js 18 n’est pas compatible avec toutes les dépendances du projet.
-
-### Installation en local
-
-Depuis PowerShell :
+Dans PowerShell, pour travailler sur la branche de préparation à l’oral :
 
 ```powershell
-git clone https://github.com/colinvogt/294-projet-deezer-vogtcol.git
+git clone --branch simplification-oral https://github.com/colinvogt/294-projet-deezer-vogtcol.git
 cd 294-projet-deezer-vogtcol
 npm ci
 Copy-Item .env.example .env
 npm run dev
 ```
 
-Ouvrir l’adresse indiquée dans le terminal, normalement `http://localhost:3000`.
+Ouvrir l’adresse indiquée par Vite, normalement `http://localhost:3000`. Si un fichier `.env` est déjà configuré, garder celui-ci. La variable `VITE_API_URL` doit pointer vers `https://apis.divtec.me/api/deezer`.
 
-La copie de `.env.example` est nécessaire à la première installation. Si un `.env` existe déjà, conserver sa configuration plutôt que l’écraser. Le fichier doit contenir :
+Pour contrôler le projet, lancer `npx eslint . --no-fix` puis `npm run build`. Le workflow GitHub exécute ces vérifications sur les changements vers `main`. Vercel utilise le dossier `dist` produit par la compilation, et `vercel.json` permet de recharger directement une fiche.
 
-```dotenv
-VITE_API_URL=https://apis.divtec.me/api/deezer
-```
+### Méthodologie
 
-Redémarrer le serveur Vite après une modification de cette variable. `.env` reste local et figure dans `.gitignore` ; `.env.example` contient le modèle public à partager. Les variables préfixées `VITE_` sont visibles dans le code envoyé au navigateur et ne doivent pas contenir de secret.
+- Les pages réutilisent les cartes d’albums, d’artistes et de titres. Elles leur transmettent les données avec des props. Le catalogue partage sa grille entre les trois catégories grâce à un slot.
+- Le clic sur le cœur appelle une action du store Pinia. Les composants lisent ensuite l’état mis à jour dans le store.
+- Les commits sont regroupés par changement avec les préfixes `feat:`, `fix:` et `docs:`. Les vérifications combinent des essais manuels, ESLint, la compilation et des tests ciblés du store.
 
-### Commandes utiles
+### Choix techniques
 
-| Commande | Utilité |
+L’API pédagogique Deezer fournit les trois catégories dont le projet a besoin.
+
+| Requêtes | Utilisation |
 | --- | --- |
-| `npm run dev` | Lancer le serveur local |
-| `npx eslint . --no-fix` | Vérifier le code sans le modifier |
-| `npm run lint` | Vérifier le code et appliquer les corrections automatiques de style |
-| `npm run build` | Construire la version de production dans `dist/` |
-| `npm run preview` | Consulter localement la version construite, généralement sur le port 4173 |
+| `GET /albums` et `GET /albums/:id` | Liste et fiche d’album. |
+| `GET /artists` et `GET /artists/:id` | Liste et fiche d’artiste. |
+| `GET /tracks` et `GET /tracks/:id` | Liste et fiche de titre. |
 
-Si la page devient blanche, regarder les erreurs dans la console du navigateur et le terminal Vite. Vérifier en particulier les imports, les erreurs de syntaxe, la variable d’API et les données utilisées dans le template.
-
-### API et pagination
-
-URL de base : `https://apis.divtec.me/api/deezer`.
-
-| Requête utilisée | Rôle |
-| --- | --- |
-| `GET /albums` et `GET /albums/:id` | Liste et fiche d’album |
-| `GET /artists` et `GET /artists/:id` | Liste et fiche d’artiste |
-| `GET /tracks` et `GET /tracks/:id` | Liste et fiche de titre |
-
-Les listes renvoient `{ data, pagination }`. Les fiches renvoient directement un objet. Les appels sont limités à dix secondes avant de signaler un échec. Le store vérifie les identifiants et les nombres de pagination avant de mettre une liste en cache ; une réponse invalide affiche l’état d’erreur. Les statistiques facultatives d’un artiste ne sont affichées que si elles sont numériques, sans confondre zéro et une donnée absente.
-
-- `limit` est limité à **100 par requête**, pas à 100 éléments pour toute l’application.
-- Le catalogue demande `limit=24`, puis augmente `page` lorsque l’on clique sur « Charger la suite ».
-- `q` transmet la recherche à l’API. La saisie attend 300 ms avant de relancer la recherche, et la requête précédente est annulée si elle est encore en cours.
-- `artist` filtre les albums et titres ; `genres` filtre les artistes. Les suggestions viennent des éléments déjà chargés, mais on peut saisir une autre valeur puis appuyer sur Entrée.
-- Le bouton A → Z / Z → A trie les éléments déjà affichés. Ce n’est pas un classement global de toutes les pages du serveur.
-- Les associations utilisent des noms textuels fournis par l’API. Leur affichage est limité à un aperçu de 12 résultats, avec un compteur si d’autres existent.
-
-Exemple : `GET /albums?page=1&limit=24&artist=Tame%20Impala` recherche les albums de cet artiste dans le catalogue, même si leurs cartes n’ont pas encore été chargées.
-
-### Catalogue de secours « mock »
-
-Un mock est un petit jeu de données local qui permet de présenter le site si l’API ne répond plus. Il a été ajouté à ma demande le 9 novembre 2026, même si les consignes de cette année exemptent le mode hors ligne. Il réutilise les composants et les notions des séquences 1 à 5.
-
-- L’application essaie d’abord l’API. Une panne réseau, un délai dépassé ou une réponse HTTP 408, 429 ou 5xx active le secours.
-- Le store remplace son cache par `src/data/mock.json` : **4 albums, 4 artistes et 3 titres**, dont les neuf coups de cœur. Les données et leurs identifiants proviennent de l’API DIVTEC, consultée le 9 novembre 2026.
-- Les onze images sont dans `public/mock/` : elles restent affichables lorsque le serveur de l’API est indisponible. Elles représentent environ 231 Kio au total.
-- `src/services/mockCatalogue.js` retrouve une fiche par identifiant et applique recherche, filtres et pagination à cette sélection. La recherche ignore la casse ; les filtres correspondent à une valeur entière, comme « Tame Impala » ou « Rock ».
-- Le bandeau « Mode démonstration » indique que les résultats sont limités. Une bascule pendant « Charger la suite » recommence à la première page locale afin de ne pas mélanger les deux catalogues.
-- Les favoris gardent leurs vrais identifiants. Ceux absents du mock restent enregistrés et sont signalés comme indisponibles. Ils peuvent réapparaître au retour de l’API.
-- Le mode de secours reste actif jusqu’au rechargement. Le bouton « Réessayer l’API » recharge la page et tente à nouveau les appels normaux.
-- Une recherche annulée, une réponse 404 ou une réponse mal formée ne déclenche pas le mock : les véritables erreurs restent traitées par les états existants.
-
-Ce secours ne fournit pas tout le catalogue et les données sont figées à la date de leur copie. Le site doit toujours pouvoir se charger depuis son hébergement ; il ne s’agit pas d’une PWA avec un démarrage garanti sans connexion.
+L’API accepte jusqu’à **100 éléments par requête**. Le catalogue en demande **24** à la fois et avance seulement quand la réponse arrive avec succès. La recherche (`q`) et le filtre (`artist` ou `genres`) sont envoyés à l’API pour couvrir aussi les pages encore invisibles. Le tri réordonne les cartes déjà chargées. Les fiches affichent jusqu’à 12 éléments associés.
 
 ### Architecture
 
-```text
-src/
-├── components/       Cartes, recherche, catalogue, fiche, menu et bouton favori
-├── pages/            Accueil, catalogues, fiches, favoris et page 404
-├── layouts/          Mise en page avec v-main et router-view
-├── stores/           deezerStore pour données/favoris ; app pour notifications
-├── data/             Petite sélection musicale locale dans mock.json
-├── services/         Lecture, recherche et pagination du catalogue de secours
-├── plugins/          Configuration Axios, Vuetify et enregistrement des plugins
-├── router/           Configuration du routage automatique
-├── utils/            Construction des URL d’images et formatage date/durée
-├── assets/           Logo
-├── styles/           Configuration de styles Vuetify
-├── App.vue           Structure commune et notification persistante
-└── main.js           Démarrage de l’application
-```
-
-Les routes sont générées à partir des fichiers de `src/pages/`. Les composants et certaines fonctions Vue sont importés automatiquement grâce aux plugins configurés dans `vite.config.mjs`.
-
-| Route | Contenu |
+| Fichier ou dossier | Rôle |
 | --- | --- |
-| `/` | Coups de cœur |
-| `/album`, `/artiste`, `/titre` | Catalogues |
-| `/Album/:id` | Fiche d’album |
-| `/artiste/:id`, `/titre/:id` | Fiches d’artiste et de titre |
-| `/favoris` | Favoris des trois catégories |
-| Autre chemin | Page 404 |
-
-Les fichiers `artiste.[id].vue` et `titre.[id].vue` créent des routes de détail indépendantes des listes. `Album/[id].vue` conserve la route d’album existante.
+| `src/App.vue`, `src/layouts/` | Structure commune, navigation et affichage des notifications. |
+| `src/pages/` | Accueil, catalogues, fiches, favoris et page 404. |
+| `src/components/` | Cartes, catalogue partagé, fiche et bouton favori. |
+| `src/stores/` | Requêtes, cache, favoris et état des notifications. |
+| `src/plugins/axios.js` | Client HTTP et adresse de l’API. |
 
 ```mermaid
 flowchart LR
-    Page[Page Vue] -->|action| Store[Store Pinia]
-    Store --> Axios[Client Axios]
-    Axios --> API[API DIVTEC]
-    API -->|JSON| Store
-    Store -->|si API indisponible| Mock[Catalogue local mock.json]
-    Mock -->|données de secours| Store
-    Store -->|données réactives| Page
-    Coeur[Bouton cœur] --> Store
-    Store -->|identifiants| Local[localStorage]
-    Store --> Message[Notification dans App.vue]
+    UI[Page ou composant] -->|Action| Pinia[Store Pinia]
+    Pinia -->|Requête Axios| API[API Deezer DIVTEC]
+    API -->|Résultats et pagination| Pinia
+    Pinia -->|Données réactives| UI
+    Pinia -->|Identifiants favoris| Local[localStorage]
 ```
 
-`itemsById` garde en mémoire les objets déjà récupérés. Les favoris stockent seulement les identifiants, séparés en albums, artistes et titres sous la clé `deezer_favorites`. Un identifiant d’album peut être identique à celui d’un artiste sans créer de conflit. Au rechargement, les objets manquants sont récupérés individuellement.
+Quand on clique sur « Charger la suite », le composant calcule le numéro de page et appelle `fetchCataloguePage`. Le store envoie la requête, vérifie la réponse et renvoie les résultats au composant qui les ajoute à la liste. Quand on clique sur un cœur, le store ajoute ou retire l’identifiant, puis sauvegarde les favoris dans `localStorage`. Au rechargement, il récupère les informations des favoris à partir de leurs identifiants.
 
-Les boutons cœur utilisent `@click.stop.prevent` pour éviter que l’ajout d’un favori ouvre aussi la fiche. La notification est affichée dans `App.vue` : elle reste visible quand une carte disparaît de la page favoris.
+---
 
-### Organisation du travail
+## 4. 🧪 Tests et validation
 
-Les changements sont regroupés par objectif dans des commits `feat:`, `fix:` ou `docs:`. La vérification combine lecture du code, contrôle de style, compilation et tests de parcours. Les composants communs évitent de copier la recherche, les favoris ou les fiches dans chaque catégorie.
+### Tests techniques
 
-### Site existant sur Vercel
+- ESLint et la compilation de production réussissent sur la version locale vérifiée le 10 novembre 2026. Les 15 tests ciblés du store passent avec des réponses et un stockage simulés. Le script utilisé pour la revue est conservé hors du dépôt.
+- Les essais dans le navigateur ont couvert le chargement des catalogues et la navigation du titre « Dark Red » vers l’artiste Steve Lacy, puis vers l’album « Gemini Rights ».
+- Après ajout d’un favori et rechargement de la page, le favori réapparaît. Son retrait met à jour la liste et affiche une confirmation.
 
-Le projet est déjà publié à l’adresse indiquée en début de document. Pour reconstruire cette application sur Vercel, la configuration attendue est Vite, avec `npm run build`, le dossier de sortie `dist` et la variable `VITE_API_URL` définie lors du build. Le fichier `vercel.json` renvoie les routes vers `index.html`, ce qui permet d’ouvrir directement une fiche ou de la recharger.
+### Tests d’UX
 
-Le fichier `.github/workflows/deploy.yml` conserve son nom hérité du modèle, mais son rôle est maintenant de vérifier le projet. À chaque push ou pull request vers `main`, il utilise Node.js 22, installe avec `npm ci`, copie le modèle public `.env.example`, lance ESLint sans correction automatique puis compile l’application. Il ne publie plus sur GitHub Pages. La publication reste gérée séparément par Vercel.
+- « Charger la suite » fait passer la liste d’albums de 24 à 48 résultats. Le filtre « Tame Impala » et l’inversion du tri ont été testés.
+- Le chargement, les erreurs et les listes vides ont chacun un message ou un indicateur dédié.
+- Les cinq entrées du menu restent accessibles à 320 pixels sur les vues vérifiées.
 
-## 4. Tests et validation
+### Tests d’accessibilité
 
-Vérifications réalisées pendant la revue du 5 novembre 2026, sur une copie locale du code corrigé :
+- Les boutons du menu et les cœurs ont des libellés, et les images des cartes ont un texte alternatif.
+- Le cœur a été activé au clavier avec Entrée sans ouvrir la fiche. Le lien du logo dispose d’un style de focus visible.
+- Le contraste n’a pas été mesuré systématiquement. Le cœur est imbriqué dans le lien de la carte, un point à améliorer pour certains lecteurs d’écran.
 
-| Vérification | Résultat observé |
-| --- | --- |
-| ESLint sur le projet | Réussi après correction de dix erreurs de style initiales |
-| Compilation de production | Réussie |
-| Accueil | Neuf coups de cœur chargés |
-| Pagination albums | Passage de 24 à 48 résultats sur 1 000 |
-| Filtre saisi « Tame Impala » | Deux albums trouvés, même sans suggestion initiale |
-| Tri inversé | Ordre des deux albums inversé |
-| Recherche sans résultat | Compteur nul et message explicite |
-| Filtre artistes « Rock » | Résultats filtrés, avec pagination |
-| Recherche titre « Dark Red » | Un résultat et ouverture de sa fiche |
-| Navigation entre fiches | Titre → Steve Lacy → Gemini Rights |
-| Rechargement direct d’une fiche | Détails toujours affichés |
-| Identifiant invalide et route inconnue | Message introuvable et page 404 |
-| Ajout/retrait de favoris | Compteur mis à jour et confirmation visible |
-| Rechargement des favoris | Favori conservé |
-| Cœur activé avec Entrée | Ajout effectué sans ouvrir la fiche |
-| Menu à 320 pixels | Cinq liens visibles, sans débordement horizontal sur les pages vérifiées |
-| API volontairement inaccessible | Alertes et bouton Réessayer sur catalogue et fiche |
-| Console des parcours normaux testés | Aucun avertissement ni erreur observé |
+### Tests d’erreurs & fallback
 
-Douze vérifications isolées supplémentaires ont été exécutées pendant la revue avec les vrais stores Pinia et des réponses API/stockage simulées en mémoire. Elles couvrent notamment les identifiants en double, le JSON invalide, les refus de stockage, les favoris indisponibles, la persistance et les paramètres de pagination. Ce script de revue temporaire n’est pas une suite de tests livrée dans le dépôt.
+- En simulant une API inaccessible, le catalogue et la fiche affichent une alerte et un bouton « Réessayer ». Le mode hors ligne avec données simulées est facultatif pour 2026–2027. [Consignes du professeur](https://tirtho.notion.site/Projet-individuel-valuatif-Application-Vue-3-Vuetify-avec-API-268e74c07f7c80e5822adb530f7a6027)
+- Si une page échoue, « Réessayer » redemande cette page. Une nouvelle recherche repart à la page 1.
+- Une recherche sans résultat, une liste de favoris vide et une adresse de fiche invalide affichent chacune un message adapté.
 
-Le site Vercel existant a été consulté séparément : l’accueil et le rechargement de la fiche Deadbeat fonctionnaient. Cela ne signifie pas que les corrections locales de cette revue sont déjà déployées.
+---
 
-### Vérification complémentaire du 9 novembre 2026, avant le mock
+## 5. 🤖 Usage d’intelligence artificielle
 
-Les consignes et le barème ont été relus en conservant le périmètre des séquences 1 à 5. La compilation et ESLint sans modification automatique réussissent sur une copie du code corrigé. Dix-huit tests isolés passent avec les vrais stores, un rendu Vue de la carte artiste et des réponses API/stockage simulées. Cinq tests ont d’abord reproduit les défauts corrigés : statistiques absentes, pagination incomplète, identifiants de liste invalides et deux erreurs du routeur lorsque le stockage est refusé.
+### IA utilisée
 
-La version compilée a été testée dans le navigateur : neuf coups de cœur, pagination de 24 à 48 albums, recherche vide, filtre Tame Impala, inversion du tri, filtre de genre Rock, recherche Dark Red, navigation titre → artiste → album et rechargement direct. L’ajout d’un favori avec Entrée n’ouvre pas la fiche ; le favori survit au rechargement et sa suppression affiche une confirmation. Le menu reste accessible à 320 pixels. Les adresses invalides montrent un message adapté. Aucune erreur ni avertissement de console n’a été observé sur ces parcours normaux.
+J’ai utilisé ChatGPT / Codex (OpenAI) pour comprendre des erreurs, obtenir des explications, apporter des corrections, simplifier du code et rédiger la documentation. Les versions précises utilisées à chaque échange n’ont pas été consignées.
 
-Un serveur de test séparé avec une API volontairement inaccessible confirme les alertes et le bouton Réessayer sur la liste et sur la fiche. L’ouverture d’une fiche depuis le bas d’une liste a aussi été vérifiée après correction : elle commence en haut, avec Retour visible. Les scripts de test restent hors du dépôt ; ils n’ajoutent aucune dépendance au projet.
+### Utilisation détaillée
 
-Le workflow GitHub a été contrôlé syntaxiquement et ses commandes de vérification ont été exécutées localement avec Node.js 26.12.1. Son exécution sur GitHub avec Node.js 22 et la publication Vercel ne sont pas couvertes par ces essais locaux. Les commits de cette revue n’ont pas été poussés ni déployés par l’assistant.
+J’estime l’utilisation de l’IA à **40–50 % sur l’ensemble du projet**. Il s’agit d’une estimation personnelle qui comprend l’aide au code, aux corrections, aux tests et à la documentation.
 
-### Vérification du mock, le 9 novembre 2026
+L’aide a porté sur la pagination et la recherche côté API, les favoris, les fiches détaillées et le menu mobile. Codex a proposé et appliqué des changements de code, participé aux tests et aidé à structurer le README.
 
-La compilation de production et ESLint sans correction automatique réussissent. **29 tests isolés** passent : 14 portent sur le secours et 15 revérifient le store existant. Ils couvrent les pannes et les délais, les erreurs qui ne doivent pas déclencher le mock, les requêtes annulées, la recherche, les filtres, la pagination locale, les favoris, les réponses distantes tardives et la présence des onze images. Les scripts restent hors du dépôt et aucune dépendance n’a été ajoutée.
+Pour adapter le Pokédex à Vogtunes, les favoris ont été répartis entre albums, artistes et titres. La recherche a été envoyée au serveur pour trouver aussi des résultats en dehors de la page chargée. J’ai demandé des explications sur ces changements et sur la limite de résultats par requête.
 
-Les essais dans le navigateur utilisent une copie locale avec un serveur intermédiaire de test capable de simuler une panne, sans couper le réseau de l’ordinateur ni modifier le site publié. Résultats observés :
+### Parties codées manuellement
 
-| Situation | Résultat |
-| --- | --- |
-| API disponible | 24 albums affichés sur 1 000, sans bandeau de secours |
-| Panne sur la deuxième page | Bascule vers les 4 albums locaux, sans mélange avec la liste précédente |
-| Filtre « Tame Impala », tri et recherche inexistante | 2 albums, ordre inversé, puis résultat vide explicite |
-| Accueil et détails | Neuf coups de cœur disponibles ; navigation Dark Red → Steve Lacy → Gemini Rights |
-| Favoris puis rechargement avec API inaccessible | Dark Red toujours utilisable ; album distant n° 22 conservé et signalé indisponible |
-| API rétablie puis « Réessayer l’API » | Catalogue complet rétabli et album favori n° 22 de nouveau visible |
+J’ai écrit le code de départ en suivant le tutoriel jusqu’à la séquence des favoris, en l’adaptant à mon projet musical. J’ai choisi le thème, les coups de cœur et les comportements que je voulais pour le site. À partir de l’adaptation des favoris, j’ai demandé une aide plus directe pour écrire et corriger certaines parties. Une partie des tests a également été faite avec Codex. Je n’ai pas mesuré de pourcentages de contribution par partie.
 
-Ces essais valident le code local ; l’ajout du mock n’a pas été poussé ni déployé par l’assistant.
+### Apprentissage personnel
 
-### Scénario de démonstration
+Les explications, parfois ligne par ligne, m’ont aidé à comprendre le rôle du store, le fonctionnement des appels API et la pagination. J’ai aussi travaillé à expliquer, avec mes mots, ce qui se passe entre le clic de l’utilisateur et la mise à jour de la page.
 
-1. Ouvrir Albums, charger la suite, puis saisir « Tame Impala » dans le filtre et valider avec Entrée.
-2. Inverser le tri, ouvrir une fiche et consulter ses informations.
-3. Ajouter un favori, aller dans Favoris, puis recharger la page.
-4. Retirer le favori et observer la confirmation ainsi que le message de liste vide.
-5. Tester une recherche inexistante et une adresse telle que `/titre/invalide`.
-6. Réduire la largeur du navigateur pour contrôler l’accès au menu.
+---
 
-### Tester le secours
-
-1. Lancer le site normalement et ouvrir Albums : le catalogue provient de l’API.
-2. Dans les outils de développement du navigateur, bloquer les requêtes vers `https://apis.divtec.me/api/deezer/*`, puis recharger la page. Garder le serveur du site accessible.
-3. Vérifier le bandeau « Mode démonstration » et le compteur de quatre albums. Tester le filtre « Tame Impala », une fiche et l’ajout d’un favori.
-4. Autoriser à nouveau les requêtes et cliquer sur « Réessayer l’API ». Le catalogue normal doit revenir et les identifiants favoris rester conservés.
-
-### Limites connues
-
-- Le catalogue complet dépend de l’API. Le secours contient seulement onze éléments avec leurs images locales ; il ne garantit pas le chargement initial du site sans connexion.
-- Les favoris appartiennent au navigateur et à l’adresse du site. Ils ne sont pas synchronisés entre appareils ; effacer les données du navigateur les supprime.
-- Si le stockage est refusé, l’action fonctionne pour la session avec un avertissement, mais elle peut être perdue au rechargement.
-- Un favori indisponible est conservé jusqu’à une nouvelle tentative réussie ou son retrait explicite par l’utilisateur.
-- Le cache des objets est conservé pour la session. Il ne garantit pas une actualisation immédiate des données du serveur.
-- Le tri porte sur les résultats chargés ; les éléments associés sont limités à 12 et certains liens musicaux peuvent manquer dans le catalogue pédagogique.
-- Les tests d’accessibilité réalisés sont des contrôles de base, pas un audit WCAG complet. Tous les appareils et tous les enregistrements de l’API n’ont pas été testés.
-
-## 5. Usage de l’intelligence artificielle
-
-### Outil et transparence
-
-ChatGPT / Codex (OpenAI) a été utilisé pour comprendre le code, proposer et écrire des modifications, déboguer et rédiger la documentation. La version précise de chaque échange n’a pas été consignée.
-
-### Travail personnel et aide reçue
-
-J’ai écrit moi-même le code de départ, ligne par ligne, en suivant le tutoriel Pokédex Vuetify jusqu’à la séquence des favoris et en l’adaptant à mon projet musical. Lorsque je ne comprenais pas une erreur, j’ai demandé de l’aide à l’IA pour comprendre mon problème et corriger les bugs.
-
-À partir de l’adaptation des favoris, dont le fonctionnement différait de l’exemple du tutoriel, j’ai demandé une aide plus directe à l’IA. Cette aide a ensuite compris des propositions et des modifications de code appliquées au projet, ainsi que des explications détaillées. Les interventions réalisées avec l’IA ont notamment porté sur :
-
-- la pagination et la recherche distante en respectant la limite de 100 éléments par requête ;
-- le chargement des favoris par identifiant ;
-- la sélection de l’accueil, le menu compact et les fiches détaillées ;
-- la revue du code et les corrections des notifications, de la persistance, du filtre et de l’accessibilité ;
-- la seconde revue du 9 novembre : contrôles des réponses API, statistiques facultatives, navigation et configuration de vérification GitHub ;
-- l’ajout, à ma demande, du catalogue de secours local, de ses images et du bandeau « Mode démonstration » ;
-- les tests de la revue et la rédaction de ce README.
-
-La répartition personnelle/IA n’a pas été mesurée. Il n’est donc pas possible d’attribuer honnêtement un pourcentage précis à chaque fichier ou domaine. Les tests de cette revue ont été réalisés avec l’assistance de Codex.
-
-### Compréhension et adaptation
-
-J’ai demandé des explications détaillées sur les modifications, parfois ligne par ligne, notamment pour le store, les appels API, la limite de 100 éléments et la recherche. Le code a été adapté aux trois catégories musicales, aux champs de l’API DIVTEC et à mon choix de coups de cœur.
-
-Le thème musical, les éléments choisis pour l’accueil, les demandes de fonctionnement et le bilan personnel viennent de moi. Le projet repose aussi sur le modèle Vuetify et le tutoriel du cours. Je dois pouvoir expliquer le code utilisé pendant la défense orale ; cette documentation ne remplace pas cette compréhension.
-
-## 6. Bilan personnel
+## 6. 🎯 Bilan personnel
 
 ### Ce que j’ai appris
 
-J’ai appris à gérer des données grâce à une API et à les afficher dans une application web.
+J’ai appris à récupérer les données d’une API, à les organiser et à les afficher dans une application Vue. J’ai aussi compris comment garder des favoris dans le navigateur après avoir rechargé une page.
 
 ### Difficultés rencontrées
 
-Ma principale difficulté a été de comprendre mes erreurs. Une faute dans le code pouvait provoquer une page complètement blanche, sans que je voie immédiatement ce qui n’allait pas. J’ai dû reprendre mon code en détail pour chercher l’origine du problème. Les explications reçues m’ont aussi aidé à comprendre le fonctionnement des parties modifiées.
+Ma principale difficulté était de trouver la cause de mes erreurs. Quand le site affichait une page blanche, j’ai dû relire le code en détail pour repérer où il bloquait. Les explications reçues m’ont aidé à comprendre les parties que je devais corriger.
 
 ### Réussites et fiertés
 
-Je suis fier du site lui-même et de ce que j’ai accompli. Le résultat est une application musicale qui fonctionne et qui est publiée en ligne.
+Je suis fier du site et de ce que j’ai accompli. J’ai réussi à créer une application musicale à partir d’une API et à la publier en ligne.
 
 ### Améliorations possibles
 
-Les pistes identifiées pendant la revue concernent surtout une meilleure actualisation du cache, un tri global si l’API le permet, des filtres proposant davantage de suggestions et des tests sur d’autres appareils. Elles ne sont pas présentées comme des fonctionnalités déjà réalisées.
+Avec plus de temps, j’aimerais tester le site sur davantage d’appareils, séparer le bouton favori du lien de la carte pour l’accessibilité et étudier un tri global si l’API le permet.
 
-## 7. Références et sources
+---
 
-- [Consignes du projet individuel évaluatif](https://tirtho.notion.site/Projet-individuel-valuatif-Application-Vue-3-Vuetify-avec-API-268e74c07f7c80e5822adb530f7a6027)
-- [Tutoriel Pokédex Vuetify — séquences 1 à 5](https://devjs.ch/exercices/pokedex-vuetify/)
-- [Étape 16 — Interface favoris](https://devjs.ch/exercices/pokedex-vuetify/e16.html)
-- [Étape 17 — Récapitulatif de la séquence 5](https://devjs.ch/exercices/pokedex-vuetify/e17.html)
-- [API pédagogique Deezer DIVTEC](https://apis.divtec.me/api/deezer/docs)
-- [Vue 3](https://vuejs.org/guide/introduction.html), [Vue Router](https://router.vuejs.org/) et [Pinia](https://pinia.vuejs.org/)
-- [Vuetify 3](https://vuetifyjs.com/)
-- [Axios](https://axios-http.com/docs/intro)
-- [Vite — Variables d’environnement](https://vite.dev/guide/env-and-mode.html)
-- [Vercel — Applications Vite et routes SPA](https://vercel.com/docs/frameworks/frontend/vite#using-vite-to-make-spas)
+## 7. 📚 Références & Sources
 
-Les pochettes et images d’artistes affichées proviennent de l’API pédagogique, y compris les onze copies locales du catalogue de secours. L’utilisation de l’IA est décrite dans la section 5.
+- [Consignes du projet évaluatif](https://tirtho.notion.site/Projet-individuel-valuatif-Application-Vue-3-Vuetify-avec-API-268e74c07f7c80e5822adb530f7a6027)
+- [API pédagogique Deezer DIVTEC](https://apis.divtec.me/api/deezer/docs), source des données et des images musicales.
+- [Tutoriel Pokédex Vuetify de DEVJS](https://devjs.ch/exercices/pokedex-vuetify/) et [récapitulatif de la séquence 5](https://devjs.ch/exercices/pokedex-vuetify/e17.html).
+- [Vue 3](https://vuejs.org/guide/introduction.html), [Vuetify 3](https://vuetifyjs.com/), [Vue Router](https://router.vuejs.org/), [Pinia](https://pinia.vuejs.org/) et [Axios](https://axios-http.com/docs/intro).
+- [Variables d’environnement de Vite](https://vite.dev/guide/env-and-mode.html) et [déploiement Vite sur Vercel](https://vercel.com/docs/frameworks/frontend/vite).
+- L’usage de l’IA est détaillé dans la section 5.
