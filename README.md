@@ -199,6 +199,8 @@ Je suis fier du site et de ce que j’ai accompli. J’ai réussi à créer une 
 
 Avec plus de temps, j’aimerais tester le site sur davantage d’appareils, séparer le bouton favori du lien de la carte pour l’accessibilité et étudier un tri global si l’API le permet.
 
+Avec plus de temps, j’aimerais aussi permettre aux utilisateurs de créer un compte et de se connecter. Je m’inspirerais des [séquences 6 et 7 du tutoriel Pokédex](https://devjs.ch/exercices/pokedex-vuetify/) pour ajouter des formulaires, protéger les pages réservées aux utilisateurs connectés et leur permettre d’ajouter ou de supprimer des éléments dans leurs listes personnelles.
+
 ---
 
 ## 7. 📚 Références & Sources
