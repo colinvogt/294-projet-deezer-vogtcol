@@ -185,7 +185,7 @@ Les explications, parfois ligne par ligne, m’ont aidé à comprendre le rôle 
 
 ### Ce que j’ai appris
 
-J’ai appris à récupérer les données d’une API, à les organiser et à les afficher dans une application Vue. J’ai aussi compris comment garder des favoris dans le navigateur après avoir rechargé une page.
+J’ai appris à récupérer les données d’une API, à les organiser et à les afficher dans une application Vue. J’ai aussi compris comment garder des favoris dans le navigateur après avoir rechargé une page, ainsi que la syntaxe et la logique de Vue.
 
 ### Difficultés rencontrées
 
