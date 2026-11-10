@@ -195,11 +195,6 @@
   }
 
   watch([searchQuery, selectedFilter], restartCatalogue, { flush: 'sync' })
-  watch(() => deezerStore.isMock, () => {
-    // Les suggestions et les cartes doivent venir de la même source.
-    filterOptions.value = []
-    restartCatalogue()
-  }, { flush: 'sync' })
 
   onMounted(() => loadPage(1))
   onBeforeUnmount(() => {
