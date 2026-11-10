@@ -23,7 +23,6 @@ L’application utilise l’API pédagogique Deezer hébergée par la DIVTEC. Ce
 - Ajout et retrait de favoris dans les trois catégories, avec confirmation visuelle.
 - Conservation des identifiants favoris dans le navigateur après rechargement.
 - Gestion des chargements, des erreurs réseau, des résultats vides et des pages introuvables.
-- Catalogue de démonstration local avec images lorsque l’API est indisponible.
 - Menu avec icônes seules sur petit écran et cartes adaptées à la largeur disponible.
 
 ### Aperçu
@@ -56,6 +55,7 @@ Le projet s’appuie sur le tutoriel [Pokédex Vuetify de DEVJS](https://devjs.c
 | 2–4 novembre | Recherche, filtres, tri, favoris persistants, pagination, accueil et adaptation mobile |
 | 5 novembre | Corrections des favoris, des filtres, de l’accessibilité et rédaction du README |
 | 9 novembre | Validation des réponses API, statistiques facultatives, défilement des fiches, vérification GitHub et ajout du catalogue de secours |
+| 10 novembre | Retrait du catalogue de secours sur la branche de simplification |
 
 Ces dates décrivent les commits existants, sans reconstituer artificiellement une progression hebdomadaire.
 
@@ -130,21 +130,6 @@ Les listes renvoient `{ data, pagination }`. Les fiches renvoient directement un
 
 Exemple : `GET /albums?page=1&limit=24&artist=Tame%20Impala` recherche les albums de cet artiste dans le catalogue, même si leurs cartes n’ont pas encore été chargées.
 
-### Catalogue de secours « mock »
-
-Un mock est un petit jeu de données local qui permet de présenter le site si l’API ne répond plus. Il a été ajouté à ma demande le 9 novembre 2026, même si les consignes de cette année exemptent le mode hors ligne. Il réutilise les composants et les notions des séquences 1 à 5.
-
-- L’application essaie d’abord l’API. Une panne réseau, un délai dépassé ou une réponse HTTP 408, 429 ou 5xx active le secours.
-- Le store remplace son cache par `src/data/mock.json` : **4 albums, 4 artistes et 3 titres**, dont les neuf coups de cœur. Les données et leurs identifiants proviennent de l’API DIVTEC, consultée le 9 novembre 2026.
-- Les onze images sont dans `public/mock/` : elles restent affichables lorsque le serveur de l’API est indisponible. Elles représentent environ 231 Kio au total.
-- `src/services/mockCatalogue.js` retrouve une fiche par identifiant et applique recherche, filtres et pagination à cette sélection. La recherche ignore la casse ; les filtres correspondent à une valeur entière, comme « Tame Impala » ou « Rock ».
-- Le bandeau « Mode démonstration » indique que les résultats sont limités. Une bascule pendant « Charger la suite » recommence à la première page locale afin de ne pas mélanger les deux catalogues.
-- Les favoris gardent leurs vrais identifiants. Ceux absents du mock restent enregistrés et sont signalés comme indisponibles. Ils peuvent réapparaître au retour de l’API.
-- Le mode de secours reste actif jusqu’au rechargement. Le bouton « Réessayer l’API » recharge la page et tente à nouveau les appels normaux.
-- Une recherche annulée, une réponse 404 ou une réponse mal formée ne déclenche pas le mock : les véritables erreurs restent traitées par les états existants.
-
-Ce secours ne fournit pas tout le catalogue et les données sont figées à la date de leur copie. Le site doit toujours pouvoir se charger depuis son hébergement ; il ne s’agit pas d’une PWA avec un démarrage garanti sans connexion.
-
 ### Architecture
 
 ```text
@@ -153,8 +138,6 @@ src/
 ├── pages/            Accueil, catalogues, fiches, favoris et page 404
 ├── layouts/          Mise en page avec v-main et router-view
 ├── stores/           deezerStore pour données/favoris ; app pour notifications
-├── data/             Petite sélection musicale locale dans mock.json
-├── services/         Lecture, recherche et pagination du catalogue de secours
 ├── plugins/          Configuration Axios, Vuetify et enregistrement des plugins
 ├── router/           Configuration du routage automatique
 ├── utils/            Construction des URL d’images et formatage date/durée
@@ -183,8 +166,6 @@ flowchart LR
     Store --> Axios[Client Axios]
     Axios --> API[API DIVTEC]
     API -->|JSON| Store
-    Store -->|si API indisponible| Mock[Catalogue local mock.json]
-    Mock -->|données de secours| Store
     Store -->|données réactives| Page
     Coeur[Bouton cœur] --> Store
     Store -->|identifiants| Local[localStorage]
@@ -198,7 +179,7 @@ Les boutons cœur utilisent `@click.stop.prevent` pour éviter que l’ajout d�
 ### Relire le code avant la défense
 
 - **Catalogue**. Comme dans les [étapes 12 et 13](https://devjs.ch/exercices/pokedex-vuetify/e13.html), `v-model` relie les champs aux variables du catalogue et un `computed` trie une copie des cartes. Vogtunes transmet la recherche et le filtre à l’API pour couvrir aussi les pages pas encore chargées. La liste repart en page 1 quand les critères changent. « Charger la suite » demande la page suivante.
-- **API et secours**. Les listes et les fiches passent par `requestApi` dans le store. Si une panne active le mock, elles lisent les données locales. Le mock applique le filtre, puis la recherche, puis découpe la page.
+- **API**. Les actions du store chargent les listes et les fiches via Axios. Si une requête échoue, la page affiche une alerte et permet de réessayer.
 - **Favoris**. Le bouton cœur appelle `toggleFavorite`. Le store suit le principe de l’[étape 15](https://devjs.ch/exercices/pokedex-vuetify/e15.html) : chercher la position de l’identifiant, l’ajouter avec `push` ou le retirer avec `splice`, puis sauvegarder dans `localStorage`. Ici, `indexOf(id)` suffit parce que les identifiants sont des nombres. Vogtunes conserve une liste par catégorie. La page Favoris réutilise les mêmes cartes que les catalogues, comme à l’[étape 16](https://devjs.ch/exercices/pokedex-vuetify/e16.html).
 - **Fiches**. `loadDetail` charge la fiche à partir de l’identifiant dans l’URL. `loadRelated` charge ensuite les éléments associés, par exemple les albums d’un artiste.
 
@@ -241,7 +222,7 @@ Douze vérifications isolées supplémentaires ont été exécutées pendant la 
 
 Le site Vercel existant a été consulté séparément : l’accueil et le rechargement de la fiche Deadbeat fonctionnaient. Cela ne signifie pas que les corrections locales de cette revue sont déjà déployées.
 
-### Vérification complémentaire du 9 novembre 2026, avant le mock
+### Vérification complémentaire du 9 novembre 2026
 
 Les consignes et le barème ont été relus en conservant le périmètre des séquences 1 à 5. La compilation et ESLint sans modification automatique réussissent sur une copie du code corrigé. Dix-huit tests isolés passent avec les vrais stores, un rendu Vue de la carte artiste et des réponses API/stockage simulées. Cinq tests ont d’abord reproduit les défauts corrigés : statistiques absentes, pagination incomplète, identifiants de liste invalides et deux erreurs du routeur lorsque le stockage est refusé.
 
@@ -251,22 +232,7 @@ Un serveur de test séparé avec une API volontairement inaccessible confirme le
 
 Le workflow GitHub a été contrôlé syntaxiquement et ses commandes de vérification ont été exécutées localement avec Node.js 26.12.1. Son exécution sur GitHub avec Node.js 22 et la publication Vercel ne sont pas couvertes par ces essais locaux. Les commits de cette revue n’ont pas été poussés ni déployés par l’assistant.
 
-### Vérification du mock, le 9 novembre 2026
-
-La compilation de production et ESLint sans correction automatique réussissent. **29 tests isolés** passent : 14 portent sur le secours et 15 revérifient le store existant. Ils couvrent les pannes et les délais, les erreurs qui ne doivent pas déclencher le mock, les requêtes annulées, la recherche, les filtres, la pagination locale, les favoris, les réponses distantes tardives et la présence des onze images. Les scripts restent hors du dépôt et aucune dépendance n’a été ajoutée.
-
-Les essais dans le navigateur utilisent une copie locale avec un serveur intermédiaire de test capable de simuler une panne, sans couper le réseau de l’ordinateur ni modifier le site publié. Résultats observés :
-
-| Situation | Résultat |
-| --- | --- |
-| API disponible | 24 albums affichés sur 1 000, sans bandeau de secours |
-| Panne sur la deuxième page | Bascule vers les 4 albums locaux, sans mélange avec la liste précédente |
-| Filtre « Tame Impala », tri et recherche inexistante | 2 albums, ordre inversé, puis résultat vide explicite |
-| Accueil et détails | Neuf coups de cœur disponibles ; navigation Dark Red → Steve Lacy → Gemini Rights |
-| Favoris puis rechargement avec API inaccessible | Dark Red toujours utilisable ; album distant n° 22 conservé et signalé indisponible |
-| API rétablie puis « Réessayer l’API » | Catalogue complet rétabli et album favori n° 22 de nouveau visible |
-
-Ces essais valident le code local ; l’ajout du mock n’a pas été poussé ni déployé par l’assistant.
+Sur la branche de simplification, après le retrait du catalogue de secours, la compilation, ESLint et 15 tests du store passent. Avec une API volontairement inaccessible, la liste d’albums et la fiche d’album affichent une alerte et un bouton « Réessayer ».
 
 ### Scénario de démonstration
 
@@ -277,16 +243,9 @@ Ces essais valident le code local ; l’ajout du mock n’a pas été poussé ni
 5. Tester une recherche inexistante et une adresse telle que `/titre/invalide`.
 6. Réduire la largeur du navigateur pour contrôler l’accès au menu.
 
-### Tester le secours
-
-1. Lancer le site normalement et ouvrir Albums : le catalogue provient de l’API.
-2. Dans les outils de développement du navigateur, bloquer les requêtes vers `https://apis.divtec.me/api/deezer/*`, puis recharger la page. Garder le serveur du site accessible.
-3. Vérifier le bandeau « Mode démonstration » et le compteur de quatre albums. Tester le filtre « Tame Impala », une fiche et l’ajout d’un favori.
-4. Autoriser à nouveau les requêtes et cliquer sur « Réessayer l’API ». Le catalogue normal doit revenir et les identifiants favoris rester conservés.
-
 ### Limites connues
 
-- Le catalogue complet dépend de l’API. Le secours contient seulement onze éléments avec leurs images locales ; il ne garantit pas le chargement initial du site sans connexion.
+- Le catalogue dépend de l’API DIVTEC. En cas de panne, l’application propose de réessayer. Les consignes rendent le mock facultatif en 2026–2027.
 - Les favoris appartiennent au navigateur et à l’adresse du site. Ils ne sont pas synchronisés entre appareils ; effacer les données du navigateur les supprime.
 - Si le stockage est refusé, l’action fonctionne pour la session avec un avertissement, mais elle peut être perdue au rechargement.
 - Un favori indisponible est conservé jusqu’à une nouvelle tentative réussie ou son retrait explicite par l’utilisateur.
@@ -311,7 +270,7 @@ J’ai écrit moi-même le code de départ, ligne par ligne, en suivant le tutor
 - la sélection de l’accueil, le menu compact et les fiches détaillées ;
 - la revue du code et les corrections des notifications, de la persistance, du filtre et de l’accessibilité ;
 - la seconde revue du 9 novembre : contrôles des réponses API, statistiques facultatives, navigation et configuration de vérification GitHub ;
-- l’ajout, à ma demande, du catalogue de secours local, de ses images et du bandeau « Mode démonstration » ;
+- l’ajout du catalogue de secours, puis son retrait à ma demande sur la branche de simplification ;
 - la simplification du code des appels API, des favoris, des listes et des fiches sur une branche dédiée à la préparation de l’oral, avec une adaptation des étapes 12 à 16 du tutoriel ;
 - les tests de la revue et la rédaction de ce README.
 
@@ -354,4 +313,4 @@ Les pistes identifiées pendant la revue concernent surtout une meilleure actual
 - [Vite — Variables d’environnement](https://vite.dev/guide/env-and-mode.html)
 - [Vercel — Applications Vite et routes SPA](https://vercel.com/docs/frameworks/frontend/vite#using-vite-to-make-spas)
 
-Les pochettes et images d’artistes affichées proviennent de l’API pédagogique, y compris les onze copies locales du catalogue de secours. L’utilisation de l’IA est décrite dans la section 5.
+Les pochettes et images d’artistes affichées proviennent de l’API pédagogique. L’utilisation de l’IA est décrite dans la section 5.
