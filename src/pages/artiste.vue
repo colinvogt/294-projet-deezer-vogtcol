@@ -4,7 +4,6 @@
     filter-field="genres"
     filter-label="Filtrer par genre"
     search-label="Rechercher un artiste"
-    sort-field="name"
     title="Artistes"
     type="artistes"
   >

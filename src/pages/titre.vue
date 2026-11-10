@@ -4,7 +4,6 @@
     filter-field="artist"
     filter-label="Filtrer par artiste"
     search-label="Rechercher un titre, un artiste ou un album"
-    sort-field="title"
     title="Titres"
     type="tracks"
   >

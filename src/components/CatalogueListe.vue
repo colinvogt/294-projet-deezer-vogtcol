@@ -100,7 +100,6 @@
     filterField: { type: String, required: true },
     filterLabel: { type: String, required: true },
     searchLabel: { type: String, required: true },
-    sortField: { type: String, required: true },
     title: { type: String, required: true },
     type: { type: String, required: true },
   })
@@ -117,7 +116,7 @@
   const isLoading = ref(true)
   const error = ref(false)
 
-  let request
+  let controller = new AbortController()
   let searchTimer
 
   const hasMore = computed(() => pagination.value.page < pagination.value.pages)
@@ -125,8 +124,8 @@
   const sortedItems = computed(() => {
     const sorted = [...items.value]
     sorted.sort((a, b) => {
-      const nameA = a[props.sortField] ?? ''
-      const nameB = b[props.sortField] ?? ''
+      const nameA = a.title ?? a.name ?? ''
+      const nameB = b.title ?? b.name ?? ''
       const comparison = nameA.localeCompare(nameB, 'fr')
       return sortOrder.value === 'asc' ? comparison : -comparison
     })
@@ -137,22 +136,21 @@
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
   }
 
-  async function loadPage (page) {
-    const controller = new AbortController()
-    request = controller
+  async function loadPage () {
+    const { signal } = controller
     isLoading.value = true
     error.value = false
 
     const params = {
-      page,
+      page: pagination.value.page + 1,
       limit: pageSize,
       q: searchQuery.value?.trim() || undefined,
       [props.filterField]: selectedFilter.value?.trim() || undefined,
     }
 
     try {
-      const result = await deezerStore.fetchCataloguePage(props.type, params, controller.signal)
-      if (controller.signal.aborted) return
+      const result = await deezerStore.fetchCataloguePage(props.type, params, signal)
+      if (signal.aborted) return
 
       // Si une page renvoie un ID déjà affiché, mettre à jour sa carte.
       const updatedItems = [...items.value]
@@ -174,31 +172,33 @@
       options.sort((a, b) => a.localeCompare(b, 'fr'))
       filterOptions.value = options
     } catch {
-      if (!controller.signal.aborted) error.value = true
+      if (!signal.aborted) error.value = true
     } finally {
-      if (!controller.signal.aborted) isLoading.value = false
+      if (!signal.aborted) isLoading.value = false
     }
   }
 
   function loadNextPage () {
-    if (!isLoading.value) loadPage(pagination.value.page + 1)
+    if (!isLoading.value) loadPage()
   }
 
   function restartCatalogue () {
     clearTimeout(searchTimer)
-    request?.abort()
+    // Une nouvelle recherche annule les requêtes de la précédente.
+    controller.abort()
+    controller = new AbortController()
     items.value = []
     pagination.value = { page: 0, pages: 0, total: 0 }
     isLoading.value = true
     error.value = false
-    searchTimer = setTimeout(() => loadPage(1), searchDelay)
+    searchTimer = setTimeout(loadPage, searchDelay)
   }
 
   watch([searchQuery, selectedFilter], restartCatalogue, { flush: 'sync' })
 
-  onMounted(() => loadPage(1))
+  onMounted(loadPage)
   onBeforeUnmount(() => {
     clearTimeout(searchTimer)
-    request?.abort()
+    controller.abort()
   })
 </script>
