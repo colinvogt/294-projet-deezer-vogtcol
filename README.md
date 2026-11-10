@@ -3,7 +3,7 @@
 Projet individuel de Colin Vogt pour le module 294, année 2026–2027.
 
 - [Application en ligne sur Vercel](https://294-projet-deezer-vogtcol.vercel.app/)
-- [Code source sur la branche simplification-oral](https://github.com/colinvogt/294-projet-deezer-vogtcol/tree/simplification-oral)
+- [Code source sur la branche main](https://github.com/colinvogt/294-projet-deezer-vogtcol/tree/main)
 
 ## 1. 🎨 Présentation du projet
 
@@ -64,10 +64,10 @@ Les dates ci-dessous viennent de l’historique Git.
 
 ### Installation & Run
 
-Dans PowerShell, pour travailler sur la branche de préparation à l’oral :
+Dans PowerShell, pour cloner la branche principale :
 
 ```powershell
-git clone --branch simplification-oral https://github.com/colinvogt/294-projet-deezer-vogtcol.git
+git clone --branch main https://github.com/colinvogt/294-projet-deezer-vogtcol.git
 cd 294-projet-deezer-vogtcol
 npm ci
 Copy-Item .env.example .env
