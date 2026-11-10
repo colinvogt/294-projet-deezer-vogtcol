@@ -106,9 +106,10 @@
 
   const pageSize = 24
   const searchDelay = 300
+  const emptyPagination = { page: 0, pages: 0, total: 0 }
   const deezerStore = useDeezerStore()
   const items = ref([])
-  const pagination = ref({ page: 0, pages: 0, total: 0 })
+  const pagination = ref(emptyPagination)
   const filterOptions = ref([])
   const searchQuery = ref('')
   const selectedFilter = ref(null)
@@ -138,36 +139,38 @@
 
   async function loadPage () {
     const { signal } = controller
+    const nextPage = pagination.value.page + 1
     isLoading.value = true
     error.value = false
 
     const params = {
-      page: pagination.value.page + 1,
+      page: nextPage,
       limit: pageSize,
       q: searchQuery.value?.trim() || undefined,
       [props.filterField]: selectedFilter.value?.trim() || undefined,
     }
 
     try {
-      const result = await deezerStore.fetchCataloguePage(props.type, params, signal)
+      const { items: newItems, pagination: newPagination } = await deezerStore.fetchCataloguePage(
+        props.type, params, signal,
+      )
       if (signal.aborted) return
 
-      // Si une page renvoie un ID déjà affiché, mettre à jour sa carte.
-      const updatedItems = [...items.value]
-      for (const item of result.items) {
-        const index = updatedItems.findIndex(current => current.id === item.id)
+      // Ajouter les nouvelles cartes et remplacer celles dont l'ID est déjà affiché.
+      for (const item of newItems) {
+        const index = items.value.findIndex(current => current.id === item.id)
         if (index === -1) {
-          updatedItems.push(item)
+          items.value.push(item)
         } else {
-          updatedItems[index] = item
+          items.value[index] = item
         }
       }
 
-      items.value = updatedItems
-      pagination.value = result.pagination
+      // On avance seulement après une réponse réussie : Réessayer redemande la même page.
+      pagination.value = newPagination
 
       // Les choix restent disponibles lorsque la recherche renvoie moins de résultats.
-      const newOptions = result.items.flatMap(item => item[props.filterField] ?? [])
+      const newOptions = newItems.flatMap(item => item[props.filterField] ?? [])
       const options = [...new Set([...filterOptions.value, ...newOptions.filter(Boolean)])]
       options.sort((a, b) => a.localeCompare(b, 'fr'))
       filterOptions.value = options
@@ -188,7 +191,7 @@
     controller.abort()
     controller = new AbortController()
     items.value = []
-    pagination.value = { page: 0, pages: 0, total: 0 }
+    pagination.value = emptyPagination
     isLoading.value = true
     error.value = false
     searchTimer = setTimeout(loadPage, searchDelay)
