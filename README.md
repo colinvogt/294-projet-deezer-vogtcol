@@ -155,6 +155,8 @@ J’ai utilisé ChatGPT / Codex (OpenAI) pour comprendre des erreurs, obtenir de
 
 ### Utilisation détaillée
 
+J’estime l’utilisation de l’IA à **40–50 % sur l’ensemble du projet**. Il s’agit d’une estimation personnelle qui comprend l’aide au code, aux corrections, aux tests et à la documentation.
+
 L’aide a porté sur la pagination et la recherche côté API, les favoris, les fiches détaillées et le menu mobile. Codex a proposé et appliqué des changements de code, participé aux tests et aidé à structurer le README.
 
 Pour adapter le Pokédex à Vogtunes, les favoris ont été répartis entre albums, artistes et titres. La recherche a été envoyée au serveur pour trouver aussi des résultats en dehors de la page chargée. J’ai demandé des explications sur ces changements et sur la limite de résultats par requête.
