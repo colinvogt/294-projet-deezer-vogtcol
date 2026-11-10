@@ -11,11 +11,14 @@
 
     <v-skeleton-loader v-if="isLoading" type="image, article" />
 
-    <v-alert v-else-if="!item" type="error" variant="tonal">
-      {{ itemError ? 'Impossible de charger cette fiche.' : configuration.notFound }}
-      <v-btn v-if="itemError" class="ml-2" variant="text" @click="retryCount++">
+    <v-alert v-else-if="detailError" type="error" variant="tonal">
+      Impossible de charger cette fiche.
+      <v-btn class="ml-2" variant="text" @click="loadDetail">
         Réessayer
       </v-btn>
+    </v-alert>
+    <v-alert v-else-if="!item" type="error" variant="tonal">
+      {{ label }} introuvable.
     </v-alert>
 
     <template v-else>
@@ -32,7 +35,7 @@
           </v-col>
 
           <v-col class="pa-4" cols="12" sm="7">
-            <p class="text-overline">{{ configuration.label }}</p>
+            <p class="text-overline">{{ label }}</p>
             <h1 class="text-h4 mb-4">{{ displayName }}</h1>
 
             <dl>
@@ -57,21 +60,21 @@
         />
         <v-alert v-else-if="relatedError" type="warning" variant="tonal">
           Impossible de charger les éléments associés.
-          <v-btn class="ml-2" variant="text" @click="retryCount++">
+          <v-btn class="ml-2" variant="text" @click="loadRelated">
             Réessayer
           </v-btn>
         </v-alert>
-        <template v-else-if="relatedItems.length > 0">
-          <p v-if="relatedItems.length < relatedTotal" class="text-body-2 mb-2">
-            {{ relatedItems.length }} sur {{ relatedTotal }}
+        <template v-else-if="relatedPage?.items.length">
+          <p v-if="relatedPage.items.length < relatedPage.pagination.total" class="text-body-2 mb-2">
+            {{ relatedPage.items.length }} sur {{ relatedPage.pagination.total }}
           </p>
           <v-list lines="one" rounded>
             <v-list-item
-              v-for="related in relatedItems"
+              v-for="related in relatedPage.items"
               :key="related.id"
               :prepend-avatar="getImageUrl(related.image) || undefined"
               :title="related.title ?? related.name"
-              :to="`${catalogue[association.type].detailPath}/${related.id}`"
+              :to="`${paths[association.type]}/${related.id}`"
             />
           </v-list>
         </template>
@@ -91,152 +94,134 @@
     type: { type: String, required: true },
   })
 
-  const catalogue = {
-    albums: {
-      label: 'Album',
-      listPath: '/album',
-      detailPath: '/Album',
-      notFound: 'Album introuvable.',
-      fields: album => [
-        { label: 'Artiste', value: album.artist },
-        { label: 'Date de sortie', value: formatDate(album.releaseDate) },
-        { label: 'Type de parution', value: album.recordType },
-        { label: 'Contenu explicite', value: formatExplicit(album.explicit) },
-      ],
-      association: album => album.title && album.artist && {
-        type: 'tracks',
-        heading: 'Titres de cet album dans le catalogue',
-        emptyMessage: 'Aucun titre de cet album dans le catalogue.',
-        params: { album: album.title, artist: album.artist },
-      },
-    },
-    artistes: {
-      label: 'Artiste',
-      listPath: '/artiste',
-      detailPath: '/artiste',
-      notFound: 'Artiste introuvable.',
-      fields: artiste => [
-        { label: 'Genres', value: artiste.genres?.join(', ') },
-        { label: 'Nombre d’albums sur Deezer', value: artiste.nbAlbum?.toLocaleString('fr-CH') },
-        { label: 'Fans sur Deezer', value: artiste.nbFan?.toLocaleString('fr-CH') },
-      ],
-      association: artiste => artiste.name && {
-        type: 'albums',
-        heading: 'Albums de cet artiste dans le catalogue',
-        emptyMessage: 'Aucun album de cet artiste dans le catalogue.',
-        params: { artist: artiste.name },
-      },
-    },
-    tracks: {
-      label: 'Titre',
-      listPath: '/titre',
-      detailPath: '/titre',
-      notFound: 'Titre introuvable.',
-      fields: track => [
-        { label: 'Artiste', value: track.artist },
-        { label: 'Album', value: track.album },
-        { label: 'Durée', value: formatDuration(track.duration) },
-        { label: 'Indice de popularité', value: track.rank?.toLocaleString('fr-CH') },
-        { label: 'Contenu explicite', value: formatExplicit(track.explicit) },
-      ],
-      association: track => track.artist && {
-        type: 'artistes',
-        heading: 'Artiste dans le catalogue',
-        emptyMessage: 'Cet artiste ne figure pas dans le catalogue.',
-        params: { name: track.artist },
-      },
-    },
-  }
-
   const route = useRoute()
   const router = useRouter()
   const deezerStore = useDeezerStore()
-  const configuration = computed(() => catalogue[props.type])
-  const itemId = computed(() => {
-    const param = route.params.id
-    const id = Number(param)
-    return typeof param === 'string' && /^[1-9]\d*$/.test(param) && Number.isSafeInteger(id) ? id : null
-  })
-  const item = computed(() => itemId.value && deezerStore.getItemById(props.type, itemId.value))
+  // La page recrée la fiche quand l'identifiant change.
+  const id = /^[1-9]\d*$/.test(route.params.id) ? Number(route.params.id) : null
+  const labels = { albums: 'Album', artistes: 'Artiste', tracks: 'Titre' }
+  const paths = { albums: '/album', artistes: '/artiste', tracks: '/titre' }
+  const label = labels[props.type]
+  const item = computed(() => deezerStore.getItemById(props.type, id))
   const displayName = computed(() => item.value?.title ?? item.value?.name)
-  const fields = computed(() => item.value
-    ? configuration.value.fields(item.value).filter(field => field.value != null && field.value !== '')
-    : [])
-  const association = computed(() => item.value && configuration.value.association(item.value))
 
-  const isLoading = ref(false)
-  const itemError = ref(false)
+  const isLoading = ref(true)
+  const detailError = ref(false)
   const isRelatedLoading = ref(false)
   const relatedError = ref(false)
-  const relatedItems = ref([])
-  const relatedTotal = ref(0)
-  const retryCount = ref(0)
+  const relatedPage = ref(null)
+  const controller = new AbortController()
 
-  function formatExplicit (explicit) {
-    if (typeof explicit === 'boolean') {
-      return explicit ? 'Oui' : 'Non'
-    }
+  function formatExplicit (value) {
+    if (typeof value === 'boolean') return value ? 'Oui' : 'Non'
   }
+
+  function getFields (entry) {
+    if (props.type === 'albums') {
+      return [
+        { label: 'Artiste', value: entry.artist },
+        { label: 'Date de sortie', value: formatDate(entry.releaseDate) },
+        { label: 'Type de parution', value: entry.recordType },
+        { label: 'Contenu explicite', value: formatExplicit(entry.explicit) },
+      ]
+    }
+
+    if (props.type === 'artistes') {
+      return [
+        { label: 'Genres', value: entry.genres?.join(', ') },
+        { label: 'Nombre d’albums sur Deezer', value: entry.nbAlbum?.toLocaleString('fr-CH') },
+        { label: 'Fans sur Deezer', value: entry.nbFan?.toLocaleString('fr-CH') },
+      ]
+    }
+
+    return [
+      { label: 'Artiste', value: entry.artist },
+      { label: 'Album', value: entry.album },
+      { label: 'Durée', value: formatDuration(entry.duration) },
+      { label: 'Indice de popularité', value: entry.rank?.toLocaleString('fr-CH') },
+      { label: 'Contenu explicite', value: formatExplicit(entry.explicit) },
+    ]
+  }
+
+  const fields = computed(() => {
+    if (!item.value) return []
+    return getFields(item.value).filter(field => field.value != null && field.value !== '')
+  })
+
+  const association = computed(() => {
+    const entry = item.value
+    if (!entry) return
+
+    if (props.type === 'albums' && entry.title && entry.artist) {
+      return {
+        type: 'tracks',
+        heading: 'Titres de cet album dans le catalogue',
+        emptyMessage: 'Aucun titre de cet album dans le catalogue.',
+        params: { album: entry.title, artist: entry.artist },
+      }
+    }
+
+    if (props.type === 'artistes' && entry.name) {
+      return {
+        type: 'albums',
+        heading: 'Albums de cet artiste dans le catalogue',
+        emptyMessage: 'Aucun album de cet artiste dans le catalogue.',
+        params: { artist: entry.name },
+      }
+    }
+
+    if (props.type === 'tracks' && entry.artist) {
+      return {
+        type: 'artistes',
+        heading: 'Artiste dans le catalogue',
+        emptyMessage: 'Cet artiste ne figure pas dans le catalogue.',
+        params: { name: entry.artist },
+      }
+    }
+  })
 
   function goBack () {
     if (router.options.history.state.back) {
       router.back()
     } else {
-      router.push(configuration.value.listPath)
+      router.push(paths[props.type])
     }
   }
 
-  async function loadDetail ([type, id], _, onCleanup) {
-    const controller = new AbortController()
-    const { signal } = controller
-    onCleanup(() => controller.abort())
-
-    isLoading.value = id !== null
-    itemError.value = false
-    isRelatedLoading.value = false
-    relatedError.value = false
-    relatedItems.value = []
-    relatedTotal.value = 0
-
-    if (id === null) {
-      return
-    }
+  async function loadDetail () {
+    isLoading.value = true
+    detailError.value = false
 
     try {
-      await deezerStore.fetchItem(type, id, signal)
+      if (!Number.isSafeInteger(id)) return
+      await deezerStore.fetchItem(props.type, id, controller.signal)
     } catch (error) {
-      if (!signal.aborted) {
-        itemError.value = error.response?.status !== 404
-      }
+      detailError.value = error.response?.status !== 404
+      return
     } finally {
-      if (!signal.aborted) {
-        isLoading.value = false
-      }
+      isLoading.value = false
     }
 
-    if (!signal.aborted && association.value) {
-      await loadRelated(association.value, signal)
-    }
+    await loadRelated()
   }
 
-  async function loadRelated ({ type, params }, signal) {
+  async function loadRelated () {
+    if (!association.value || controller.signal.aborted) return
+    const { type, params } = association.value
     isRelatedLoading.value = true
+    relatedError.value = false
+
     try {
-      const result = await deezerStore.fetchCataloguePage(type, { ...params, page: 1, limit: 12 }, signal)
-      if (!signal.aborted) {
-        relatedItems.value = result.items
-        relatedTotal.value = result.pagination.total
-      }
+      relatedPage.value = await deezerStore.fetchCataloguePage(
+        type, { ...params, page: 1, limit: 12 }, controller.signal,
+      )
     } catch {
-      if (!signal.aborted) {
-        relatedError.value = true
-      }
+      relatedError.value = true
     } finally {
-      if (!signal.aborted) {
-        isRelatedLoading.value = false
-      }
+      isRelatedLoading.value = false
     }
   }
 
-  watch([() => props.type, itemId, retryCount], loadDetail, { immediate: true })
+  onMounted(loadDetail)
+  onBeforeUnmount(() => controller.abort())
 </script>
