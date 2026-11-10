@@ -5,6 +5,10 @@ import { useAppStore } from '@/stores/app.js'
 const endpoints = { albums: 'albums', artistes: 'artists', tracks: 'tracks' }
 const favoritesKey = 'deezer_favorites'
 
+function isIntegerAtLeast (value, minimum) {
+  return Number.isSafeInteger(value) && value >= minimum
+}
+
 function emptyFavorites () {
   return { albums: [], artistes: [], tracks: [] }
 }
@@ -71,12 +75,12 @@ const useDeezerStore = defineStore('deezer', {
       const { data: items, pagination } = data ?? {}
       // Vérifier toute la réponse avant de modifier le cache partagé.
       const validItems = Array.isArray(items)
-        && items.every(item => Number.isSafeInteger(item?.id) && item.id > 0)
+        && items.every(item => isIntegerAtLeast(item?.id, 1))
       const validPagination = pagination
-        && Number.isSafeInteger(pagination.page) && pagination.page >= 1
-        && Number.isSafeInteger(pagination.limit) && pagination.limit >= 1 && pagination.limit <= 100
-        && Number.isSafeInteger(pagination.total) && pagination.total >= 0
-        && Number.isSafeInteger(pagination.pages) && pagination.pages >= 0
+        && isIntegerAtLeast(pagination.page, 1)
+        && isIntegerAtLeast(pagination.limit, 1) && pagination.limit <= 100
+        && isIntegerAtLeast(pagination.total, 0)
+        && isIntegerAtLeast(pagination.pages, 0)
       if (!validItems || !validPagination) {
         throw new Error('Réponse inattendue lors du chargement du catalogue.')
       }
@@ -90,7 +94,7 @@ const useDeezerStore = defineStore('deezer', {
 
     async fetchItem (type, id, signal) {
       const numericId = Number(id)
-      if (!Number.isSafeInteger(numericId) || numericId <= 0) {
+      if (!isIntegerAtLeast(numericId, 1)) {
         throw new Error('Identifiant invalide.')
       }
 
